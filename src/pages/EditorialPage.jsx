@@ -1,7 +1,7 @@
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import useSEO from '../hooks/useSEO'
-import { getAssetUrl } from '../../utils/assets'
+import { getAssetUrl } from '../utils/assets'
 
 export default function EditorialPage() {
     useSEO('Editorial', 'Historias del paddock, entrevistas con pilotos y la cultura de velocidad que inspira cada colección Rennsport.')
