@@ -94,7 +94,7 @@ export default function Navbar() {
                             alt="Rennsport Logo"
                             className="w-10 h-10 rounded-sm object-cover transition-transform group-hover:scale-110 duration-300"
                         />
-                        <span className="font-bold text-sm md:text-xl tracking-widest uppercase font-[family-name:var(--font-display)]">
+                        <span className="hidden md:block font-bold md:text-xl tracking-widest uppercase font-[family-name:var(--font-display)]">
                             Rennsport
                         </span>
                     </Link>
@@ -137,7 +137,7 @@ export default function Navbar() {
 
                             {/* Dropdown Panel */}
                             {accountOpen && (
-                                <div className="absolute right-0 top-full mt-3 w-72 bg-carbon/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 z-50" style={{ animation: 'fadeInDown 0.2s ease-out' }}>
+                                <div className="absolute right-0 top-full mt-3 w-[85vw] sm:w-72 bg-carbon/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 z-50" style={{ animation: 'fadeInDown 0.2s ease-out' }}>
                                     {/* Decorative top bar */}
                                     <div className="h-[2px] bg-gradient-to-r from-primary via-primary/50 to-transparent" />
 
