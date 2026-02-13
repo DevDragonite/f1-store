@@ -27,7 +27,7 @@ function App() {
   useEffect(() => { initAuth() }, [initAuth])
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <CustomCursor />
 
       <Suspense fallback={<PageLoader />}>
