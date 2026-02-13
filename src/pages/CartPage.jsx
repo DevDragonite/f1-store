@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import useCartStore from '../stores/useCartStore'
 import Navbar from '../components/layout/Navbar'
+import useSEO from '../hooks/useSEO'
 
 export default function CartPage() {
+    useSEO('Carrito', 'Tu carrito de compras Rennsport. Revisa tus productos y procede al pago.')
     const items = useCartStore(s => s.items)
     const updateQty = useCartStore(s => s.updateQty)
     const removeItem = useCartStore(s => s.removeItem)

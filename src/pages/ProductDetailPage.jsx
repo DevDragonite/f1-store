@@ -4,6 +4,7 @@ import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import useCartStore from '../stores/useCartStore'
 import { getProductBySlug } from '../data/products'
+import useSEO from '../hooks/useSEO'
 
 export default function ProductDetailPage() {
     const { slug } = useParams()
@@ -11,6 +12,7 @@ export default function ProductDetailPage() {
     const addItem = useCartStore(s => s.addItem)
     const [selectedSize, setSelectedSize] = useState(null)
     const [added, setAdded] = useState(false)
+    useSEO(product ? product.name : 'Producto', product ? product.description : '')
 
     if (!product) {
         return (
@@ -88,8 +90,8 @@ export default function ProductDetailPage() {
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`min-w-[48px] h-10 px-3 border text-sm font-[family-name:var(--font-mono)] transition-all ${selectedSize === size
-                                                    ? 'border-primary bg-primary/20 text-white shadow-[0_0_10px_rgba(224,7,0,0.3)]'
-                                                    : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'
+                                                ? 'border-primary bg-primary/20 text-white shadow-[0_0_10px_rgba(224,7,0,0.3)]'
+                                                : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'
                                                 }`}
                                         >
                                             {size}
@@ -107,10 +109,10 @@ export default function ProductDetailPage() {
                             onClick={handleAddToCart}
                             disabled={product.soldOut || (product.sizes && !selectedSize)}
                             className={`w-full md:w-auto px-10 py-4 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${product.soldOut
-                                    ? 'bg-white/5 text-white/30 cursor-not-allowed border border-white/10'
-                                    : added
-                                        ? 'bg-green-600 text-white border border-green-500'
-                                        : 'bg-primary hover:bg-red-600 text-white border border-primary hover:shadow-[0_4px_20px_rgba(225,6,0,0.3)]'
+                                ? 'bg-white/5 text-white/30 cursor-not-allowed border border-white/10'
+                                : added
+                                    ? 'bg-green-600 text-white border border-green-500'
+                                    : 'bg-primary hover:bg-red-600 text-white border border-primary hover:shadow-[0_4px_20px_rgba(225,6,0,0.3)]'
                                 }`}
                         >
                             <span className="material-icons text-sm">

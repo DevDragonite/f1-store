@@ -1,7 +1,9 @@
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
+import useSEO from '../hooks/useSEO'
 
 export default function EditorialPage() {
+    useSEO('Editorial', 'Historias del paddock, entrevistas con pilotos y la cultura de velocidad que inspira cada colección Rennsport.')
     return (
         <div className="bg-background-dark min-h-screen text-white">
             <Navbar />

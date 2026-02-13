@@ -2,8 +2,10 @@ import Navbar from '../components/layout/Navbar'
 import SidebarFilters from '../components/catalog/SidebarFilters'
 import ProductCard from '../components/catalog/ProductCard'
 import products from '../data/products'
+import useSEO from '../hooks/useSEO'
 
 export default function CatalogPage() {
+    useSEO('Catálogo', 'Explora nuestro catálogo de merchandising F1: hoodies, gorras, chaquetas, LEGOs y más. Envío gratis a toda Venezuela.')
     return (
         <div className="bg-background-dark min-h-screen text-white">
             <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.08]"

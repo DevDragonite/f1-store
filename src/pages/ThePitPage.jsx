@@ -1,7 +1,9 @@
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
+import useSEO from '../hooks/useSEO'
 
 export default function ThePitPage() {
+    useSEO('Soporte', 'Centro de soporte Rennsport. Rastreo de pedidos, devoluciones, preguntas frecuentes y atención al cliente.')
     return (
         <div className="bg-background-dark min-h-screen text-white">
             <Navbar />
