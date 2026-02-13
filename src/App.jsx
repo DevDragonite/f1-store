@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import CustomCursor from './components/TireTrackCursor'
 import HomePage from './pages/HomePage'
+import useAuthStore from './stores/useAuthStore'
 
 /* Lazy-load all secondary pages for fast initial load */
 const CatalogPage = lazy(() => import('./pages/CatalogPage'))
@@ -10,6 +11,7 @@ const EditorialPage = lazy(() => import('./pages/EditorialPage'))
 const ThePitPage = lazy(() => import('./pages/ThePitPage'))
 const CartPage = lazy(() => import('./pages/CartPage'))
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'))
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background-dark">
@@ -21,6 +23,9 @@ const PageLoader = () => (
 )
 
 function App() {
+  const initAuth = useAuthStore(s => s.initialize)
+  useEffect(() => { initAuth() }, [initAuth])
+
   return (
     <BrowserRouter>
       <CustomCursor />
@@ -34,6 +39,7 @@ function App() {
           <Route path="/editorial" element={<EditorialPage />} />
           <Route path="/the-pit" element={<ThePitPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

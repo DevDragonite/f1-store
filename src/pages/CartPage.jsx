@@ -84,10 +84,10 @@ export default function CartPage() {
                                 <span>Total</span>
                                 <span className="text-primary font-[family-name:var(--font-mono)]">${total.toFixed(2)}</span>
                             </div>
-                            <button className="w-full bg-primary hover:bg-red-600 text-white font-bold text-sm uppercase tracking-wider py-3 transition-colors flex items-center justify-center gap-2">
+                            <Link to="/checkout" className="w-full bg-primary hover:bg-red-600 text-white font-bold text-sm uppercase tracking-wider py-3 transition-colors flex items-center justify-center gap-2">
                                 Proceder al Pago
                                 <span className="material-icons text-sm">arrow_forward</span>
-                            </button>
+                            </Link>
                             <Link to="/catalog" className="block text-center mt-3 text-xs font-[family-name:var(--font-mono)] text-white/40 hover:text-primary transition-colors">
                                 ← Seguir Comprando
                             </Link>
