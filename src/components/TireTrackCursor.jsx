@@ -22,7 +22,7 @@ export default function CustomCursor() {
         setIsVisible(true)
 
         const handleMouseMove = (e) => {
-            if (cursorRef.current && isVisible) {
+            if (cursorRef.current) {
                 cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`
             }
         }
