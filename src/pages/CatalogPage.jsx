@@ -1,11 +1,38 @@
 import Navbar from '../components/layout/Navbar'
 import SidebarFilters from '../components/catalog/SidebarFilters'
 import ProductCard from '../components/catalog/ProductCard'
-import products from '../data/products'
+import useProducts from '../hooks/useProducts'
 import useSEO from '../hooks/useSEO'
 
 export default function CatalogPage() {
-    useSEO('Catálogo', 'Explora nuestro catálogo de merchandising F1: hoodies, gorras, chaquetas, LEGOs y más. Envío gratis a toda Venezuela.')
+    useSEO('Catálogo', 'Explora nuestro catálogo de merchandising F1. Envío gratis a toda Venezuela.')
+    const { products, loading, error } = useProducts()
+
+    if (loading) {
+        return (
+            <div className="bg-background-dark min-h-screen text-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest text-white/50">Cargando_Inventario...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="bg-background-dark min-h-screen text-white flex items-center justify-center p-6 text-center">
+                <div>
+                    <span className="material-icons text-4xl text-primary mb-4">error_outline</span>
+                    <h2 className="text-xl font-bold mb-2">Error de Conexión</h2>
+                    <p className="text-white/50 text-sm mb-4">No pudimos cargar el inventario. Verifica tu conexión.</p>
+                    <button onClick={() => window.location.reload()} className="bg-white/10 hover:bg-white/20 px-4 py-2 text-xs uppercase tracking-widest font-bold transition-colors">Reintentar</button>
+                    <p className="text-[10px] text-white/20 mt-8 font-[family-name:var(--font-mono)]">CODE: VE-DB-CONN-ERR</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="bg-background-dark min-h-screen text-white">
             <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.08]"
@@ -46,11 +73,18 @@ export default function CatalogPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {products.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </div>
+                        {products.length === 0 ? (
+                            <div className="py-20 text-center">
+                                <p className="text-white/40 text-sm mb-4">Inventario vacío o sin inicializar.</p>
+                                <p className="text-[10px] font-[family-name:var(--font-mono)] text-primary">ADMIN: Ve al Dashboard para correr el Seed DB.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {products.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        )}
 
                         <div className="mt-12 border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs font-[family-name:var(--font-mono)] text-gray-500">
                             <div className="flex items-center gap-2 mb-4 md:mb-0">

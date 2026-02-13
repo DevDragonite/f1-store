@@ -3,24 +3,42 @@ import { useState } from 'react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import useCartStore from '../stores/useCartStore'
-import { getProductBySlug } from '../data/products'
+import useProduct from '../hooks/useProduct'
 import useSEO from '../hooks/useSEO'
 
 export default function ProductDetailPage() {
     const { slug } = useParams()
-    const product = getProductBySlug(slug)
+    const { product, loading, error } = useProduct(slug)
     const addItem = useCartStore(s => s.addItem)
     const [selectedSize, setSelectedSize] = useState(null)
     const [added, setAdded] = useState(false)
-    useSEO(product ? product.name : 'Producto', product ? product.description : '')
 
-    if (!product) {
+    useSEO(product ? product.name : 'Cargando...', product ? product.description : '')
+
+    if (loading) {
+        return (
+            <div className="bg-background-dark min-h-screen text-white">
+                <Navbar />
+                <div className="pt-32 flex items-center justify-center">
+                    <div className="flex flex-col items-center">
+                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <span className="text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest text-white/50">Cargando_Datos...</span>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    if (error || !product) {
         return (
             <div className="bg-background-dark min-h-screen text-white">
                 <Navbar />
                 <div className="pt-32 text-center px-6">
                     <span className="material-icons text-6xl text-white/10 mb-4 block">error_outline</span>
                     <h1 className="text-3xl font-bold mb-4">Producto no encontrado</h1>
+                    <p className="text-white/50 mb-6 text-sm max-w-md mx-auto">
+                        Es posible que el enlace sea incorrecto o que el producto haya sido retirado del catálogo.
+                    </p>
                     <Link to="/catalog" className="text-primary hover:underline font-[family-name:var(--font-mono)] text-sm">← Volver al catálogo</Link>
                 </div>
             </div>

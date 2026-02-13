@@ -1,374 +1,322 @@
-import { useState } from 'react'
-import products from '../data/products'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import useAuthStore from '../stores/useAuthStore'
+import initialProducts from '../data/products' // For seeding
 
-/* ── Admin credentials ── */
-const ADMIN_USER = 'admin'
-const ADMIN_PASS = 'rennsport2024'
+export default function DashboardPage() {
+    const { user, signIn, signUp, signOut, loading: authLoading } = useAuthStore()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isSignUp, setIsSignUp] = useState(false)
+    const [authError, setAuthError] = useState('')
+    const [activeTab, setActiveTab] = useState('pedidos')
 
-/* ── Sample order data ── */
-const initialOrders = [
-    { id: 'PED-00201', date: '2024-02-08', client: 'Carlos M.', product: 'Hoodie Velocidad V2', qty: 1, status: 'entregado', total: 120 },
-    { id: 'PED-00198', date: '2024-02-07', client: 'María G.', product: 'Gorra Scuderia ×2', qty: 2, status: 'en_camino', total: 90 },
-    { id: 'PED-00195', date: '2024-02-06', client: 'Andrés P.', product: 'Bomber Aero Pro', qty: 1, status: 'reserva', total: 280 },
-    { id: 'PED-00190', date: '2024-02-05', client: 'Laura R.', product: 'LEGO Paddock Set', qty: 1, status: 'pendiente', total: 199 },
-    { id: 'PED-00188', date: '2024-02-04', client: 'José V.', product: 'Franela Grid Walk ×3', qty: 3, status: 'entregado', total: 165 },
-    { id: 'PED-00185', date: '2024-02-03', client: 'Daniela S.', product: 'Funko Chrono LTD', qty: 1, status: 'pendiente', total: 35 },
-    { id: 'PED-00180', date: '2024-02-02', client: 'Miguel Á.', product: 'Hoodie Velocidad V2', qty: 1, status: 'reserva', total: 120 },
-    { id: 'PED-00175', date: '2024-02-01', client: 'Ana C.', product: 'Gorra Scuderia', qty: 1, status: 'entregado', total: 45 },
-]
-
-const STATUS_CONFIG = {
-    entregado: { label: 'Entregado', color: 'text-green-400', bg: 'bg-green-400/10 border-green-400/30', icon: 'check_circle' },
-    en_camino: { label: 'En Camino', color: 'text-yellow-400', bg: 'bg-yellow-400/10 border-yellow-400/30', icon: 'local_shipping' },
-    pendiente: { label: 'Pendiente', color: 'text-technical-blue', bg: 'bg-technical-blue/10 border-technical-blue/30', icon: 'schedule' },
-    reserva: { label: 'Reserva', color: 'text-primary', bg: 'bg-primary/10 border-primary/30', icon: 'inventory_2' },
-}
-
-const STATUS_FLOW = ['pendiente', 'reserva', 'en_camino', 'entregado']
-
-const FILTER_TABS = [
-    { key: 'todos', label: 'Todos', icon: 'list' },
-    { key: 'pendiente', label: 'Pendientes', icon: 'schedule' },
-    { key: 'reserva', label: 'Reservas', icon: 'inventory_2' },
-    { key: 'en_camino', label: 'En Camino', icon: 'local_shipping' },
-    { key: 'entregado', label: 'Entregados', icon: 'check_circle' },
-]
-
-/* ── Login Gate ── */
-function AdminLogin({ onLogin }) {
-    const [user, setUser] = useState('')
-    const [pass, setPass] = useState('')
-    const [error, setError] = useState('')
-
-    const handleSubmit = (e) => {
+    const handleAuth = async (e) => {
         e.preventDefault()
-        if (user === ADMIN_USER && pass === ADMIN_PASS) onLogin()
-        else setError('Credenciales incorrectas')
+        setAuthError('')
+        try {
+            if (isSignUp) {
+                await signUp(email, password, { role: 'admin' })
+                alert('Cuenta creada. Revisa tu email para confirmar (si está activado) o inicia sesión.')
+                setIsSignUp(false)
+            } else {
+                await signIn(email, password)
+            }
+        } catch (err) {
+            setAuthError(err.message)
+        }
+    }
+
+    if (authLoading) return <div className="min-h-screen bg-background-dark text-white flex items-center justify-center">Cargando...</div>
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-background-dark text-white flex items-center justify-center p-4">
+                <div className="md:w-[400px] w-full bg-asphalt border border-white/10 p-8 relative">
+                    <div className="hud-border absolute inset-0 pointer-events-none"></div>
+                    <div className="text-center mb-8">
+                        <span className="material-icons text-4xl text-primary mb-2">admin_panel_settings</span>
+                        <h1 className="text-2xl font-bold uppercase tracking-widest">Acceso Admin</h1>
+                        <p className="text-xs text-white/40 font-[family-name:var(--font-mono)] mt-2">Rennsport Internal System</p>
+                    </div>
+                    <form onSubmit={handleAuth} className="space-y-4">
+                        <div>
+                            <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">Email</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                                className="w-full bg-black/40 border border-white/10 p-3 text-sm text-white focus:border-primary focus:outline-none" required />
+                        </div>
+                        <div>
+                            <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">Contraseña</label>
+                            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                                className="w-full bg-black/40 border border-white/10 p-3 text-sm text-white focus:border-primary focus:outline-none" required />
+                        </div>
+                        {authError && <p className="text-primary text-xs font-[family-name:var(--font-mono)]">{authError}</p>}
+                        <button type="submit" className="w-full bg-primary hover:bg-red-600 text-white font-bold text-xs uppercase tracking-widest py-3 transition-colors">
+                            {isSignUp ? 'Registrar Admin' : 'Iniciar Sesión'}
+                        </button>
+                    </form>
+                    <button onClick={() => setIsSignUp(!isSignUp)} className="w-full text-center mt-4 text-[10px] text-white/30 hover:text-white transition-colors uppercase">
+                        {isSignUp ? '¿Ya tienes cuenta? Inicia Sesión' : '¿Nueva cuenta? Crear Admin'}
+                    </button>
+                    <Link to="/" className="block text-center mt-6 text-[10px] text-white/30 hover:text-white transition-colors uppercase font-[family-name:var(--font-mono)]">
+                        ← Volver a la tienda
+                    </Link>
+                </div>
+            </div>
+        )
     }
 
     return (
-        <div className="min-h-screen bg-background-dark flex items-center justify-center px-6">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-10">
-                    <div className="w-16 h-16 mx-auto mb-6 border border-primary/50 flex items-center justify-center bg-primary/10 shadow-[0_0_30px_rgba(225,6,0,0.2)]">
-                        <span className="material-icons text-primary text-3xl">admin_panel_settings</span>
+        <div className="min-h-screen bg-background-dark text-white font-sans">
+            <header className="fixed top-0 left-0 w-full z-50 bg-carbon/95 backdrop-blur border-b border-white/10 h-16 flex items-center px-4 md:px-6 justify-between">
+                <div className="flex items-center gap-4">
+                    <Link to="/" className="font-bold tracking-tighter text-lg md:text-xl italic">RENNSPORT<span className="text-primary">.SYS</span></Link>
+                    <div className="hidden md:flex bg-white/5 rounded-full p-1 border border-white/10">
+                        <button onClick={() => setActiveTab('pedidos')} className={`px-4 py-1 rounded-full text-xs font-bold uppercase transition-all ${activeTab === 'pedidos' ? 'bg-primary text-white' : 'text-white/50 hover:text-white'}`}>Pedidos</button>
+                        <button onClick={() => setActiveTab('inventario')} className={`px-4 py-1 rounded-full text-xs font-bold uppercase transition-all ${activeTab === 'inventario' ? 'bg-primary text-white' : 'text-white/50 hover:text-white'}`}>Inventario</button>
                     </div>
-                    <h1 className="text-3xl font-bold uppercase tracking-widest text-white mb-2">El Garaje</h1>
-                    <p className="font-[family-name:var(--font-mono)] text-xs text-white/30 tracking-widest">PANEL DE ADMINISTRACIÓN</p>
                 </div>
+                <div className="flex items-center gap-3 md:gap-4">
+                    <span className="hidden md:block text-[10px] font-[family-name:var(--font-mono)] text-white/50">{user.email}</span>
+                    <button onClick={signOut} className="text-[10px] bg-white/10 hover:bg-white/20 px-3 py-1.5 border border-white/10 transition-colors uppercase font-bold">Salir</button>
+                </div>
+            </header>
 
-                <form onSubmit={handleSubmit} className="bg-asphalt border border-white/10 p-8 space-y-6 relative">
-                    <div className="hud-border absolute inset-0 pointer-events-none z-10"></div>
-                    <div>
-                        <label className="block text-xs uppercase tracking-widest text-white/40 mb-2 font-[family-name:var(--font-mono)]">Usuario</label>
-                        <input type="text" value={user} onChange={(e) => { setUser(e.target.value); setError('') }} placeholder="admin"
-                            className="w-full bg-black/40 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/15 focus:outline-none focus:border-primary transition-colors font-[family-name:var(--font-mono)]" />
-                    </div>
-                    <div>
-                        <label className="block text-xs uppercase tracking-widest text-white/40 mb-2 font-[family-name:var(--font-mono)]">Contraseña</label>
-                        <input type="password" value={pass} onChange={(e) => { setPass(e.target.value); setError('') }} placeholder="••••••••"
-                            className="w-full bg-black/40 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/15 focus:outline-none focus:border-primary transition-colors font-[family-name:var(--font-mono)]" />
-                    </div>
-                    {error && (
-                        <div className="text-primary text-xs font-[family-name:var(--font-mono)] flex items-center gap-2 bg-primary/10 border border-primary/30 p-3">
-                            <span className="material-icons text-sm">error</span>{error}
-                        </div>
-                    )}
-                    <button type="submit" className="w-full bg-primary hover:bg-red-600 text-white font-bold text-sm uppercase tracking-widest py-3 transition-colors flex items-center justify-center gap-2">
-                        <span className="material-icons text-sm">lock_open</span>Acceder
-                    </button>
-                    <p className="text-center text-[10px] font-[family-name:var(--font-mono)] text-white/20 mt-4">ACCESO RESTRINGIDO — SOLO PERSONAL AUTORIZADO</p>
-                </form>
+            {/* Mobile Tabs */}
+            <div className="md:hidden fixed top-16 left-0 w-full z-40 bg-carbon/95 backdrop-blur border-b border-white/10 flex">
+                <button onClick={() => setActiveTab('pedidos')} className={`flex-1 py-3 text-xs font-bold uppercase border-b-2 transition-colors ${activeTab === 'pedidos' ? 'border-primary text-white' : 'border-transparent text-white/40'}`}>Pedidos</button>
+                <button onClick={() => setActiveTab('inventario')} className={`flex-1 py-3 text-xs font-bold uppercase border-b-2 transition-colors ${activeTab === 'inventario' ? 'border-primary text-white' : 'border-transparent text-white/40'}`}>Inventario</button>
             </div>
+
+            <main className="pt-28 md:pt-24 pb-16 px-4 md:px-8 max-w-[1400px] mx-auto">
+                {activeTab === 'pedidos' ? <OrdersTab /> : <InventoryTab />}
+            </main>
         </div>
     )
 }
 
 /* ── Orders Tab ── */
 function OrdersTab() {
-    const [orders, setOrders] = useState(initialOrders)
+    const [orders, setOrders] = useState([])
+    const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('todos')
 
+    useEffect(() => {
+        fetchOrders()
+        const sub = supabase.channel('orders').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders).subscribe()
+        return () => supabase.removeChannel(sub)
+    }, [])
+
+    const fetchOrders = async () => {
+        const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false })
+        if (data) setOrders(data)
+        setLoading(false)
+    }
+
+    const advanceStatus = async (order) => {
+        const flow = { 'pendiente': 'reserva', 'reserva': 'en_camino', 'en_camino': 'entregado' }
+        const next = flow[order.status]
+        if (!next) return
+        await supabase.from('orders').update({ status: next }).eq('id', order.id)
+        fetchOrders() // Optimistic update ideally, but fetch is safe
+    }
+
     const filtered = filter === 'todos' ? orders : orders.filter(o => o.status === filter)
-    const counts = {
-        todos: orders.length,
+    const kpis = {
+        total: orders.length,
         pendiente: orders.filter(o => o.status === 'pendiente').length,
         reserva: orders.filter(o => o.status === 'reserva').length,
         en_camino: orders.filter(o => o.status === 'en_camino').length,
-        entregado: orders.filter(o => o.status === 'entregado').length,
+        ingresos: orders.filter(o => o.status !== 'cancelado').reduce((acc, o) => acc + (o.total || 0), 0)
     }
 
-    const advanceStatus = (orderId) => {
-        setOrders(prev => prev.map(o => {
-            if (o.id !== orderId) return o
-            const idx = STATUS_FLOW.indexOf(o.status)
-            if (idx < STATUS_FLOW.length - 1) return { ...o, status: STATUS_FLOW[idx + 1] }
-            return o
-        }))
-    }
-
-    const revenue = orders.filter(o => o.status === 'entregado').reduce((s, o) => s + o.total, 0)
+    if (loading) return <div className="text-center py-20 text-white/30 text-xs font-[family-name:var(--font-mono)]">CARGANDO_PEDIDOS...</div>
 
     return (
-        <>
-            {/* KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+        <div className="space-y-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {[
-                    { label: 'Total', value: counts.todos, icon: 'shopping_bag', color: 'text-white' },
-                    { label: 'Pendientes', value: counts.pendiente, icon: 'schedule', color: 'text-technical-blue' },
-                    { label: 'Reservas', value: counts.reserva, icon: 'inventory_2', color: 'text-primary' },
-                    { label: 'En Camino', value: counts.en_camino, icon: 'local_shipping', color: 'text-yellow-400' },
-                    { label: 'Ingresos', value: `$${revenue}`, icon: 'attach_money', color: 'text-green-400' },
-                ].map((kpi) => (
-                    <div key={kpi.label} className="bg-asphalt border border-white/5 p-4 hover:border-white/20 transition-colors">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className={`material-icons text-base ${kpi.color}`}>{kpi.icon}</span>
-                            <span className="font-[family-name:var(--font-mono)] text-[10px] text-white/40 uppercase">{kpi.label}</span>
-                        </div>
-                        <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
+                    { label: 'Total Pedidos', val: kpis.total, color: 'text-white' },
+                    { label: 'Pendientes', val: kpis.pendiente, color: 'text-yellow-400' },
+                    { label: 'Reservas', val: kpis.reserva, color: 'text-blue-400' },
+                    { label: 'En Camino', val: kpis.en_camino, color: 'text-purple-400' },
+                    { label: 'Ingresos Totales', val: `$${kpis.ingresos.toFixed(2)}`, color: 'text-green-400' }
+                ].map((k, i) => (
+                    <div key={i} className="bg-asphalt border border-white/10 p-4">
+                        <p className="text-[10px] text-white/40 uppercase mb-1">{k.label}</p>
+                        <p className={`text-2xl font-bold font-[family-name:var(--font-mono)] ${k.color}`}>{k.val}</p>
                     </div>
                 ))}
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4">
-                {FILTER_TABS.map((tab) => (
-                    <button key={tab.key} onClick={() => setFilter(tab.key)}
-                        className={`flex items-center gap-2 px-3 py-1.5 text-[11px] font-[family-name:var(--font-mono)] uppercase tracking-wider border transition-all ${filter === tab.key ? 'border-primary bg-primary/10 text-white' : 'border-white/10 text-white/40 hover:border-white/30 hover:text-white'
-                            }`}>
-                        <span className="material-icons text-sm">{tab.icon}</span>
-                        {tab.label}<span className="text-[10px] opacity-60">[{counts[tab.key]}]</span>
+            <div className="flex gap-2 border-b border-white/10 pb-4 overflow-x-auto">
+                {['todos', 'pendiente', 'reserva', 'en_camino', 'entregado', 'cancelado'].map(f => (
+                    <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1 text-xs font-bold uppercase border ${filter === f ? 'bg-white text-black border-white' : 'text-white/40 border-transparent hover:text-white'}`}>
+                        {f.replace('_', ' ')}
                     </button>
                 ))}
             </div>
 
-            {/* Orders Table */}
-            <div className="bg-asphalt border border-white/10 relative">
-                <div className="hud-border absolute inset-0 pointer-events-none z-10"></div>
-                <div className="p-4 border-b border-white/10 flex justify-between items-center">
-                    <h3 className="font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                        <span className="material-icons text-primary text-sm">receipt_long</span>Registro de Pedidos
-                    </h3>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-white/30">
-                        {filtered.length} de {orders.length}
-                    </span>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left text-[10px] font-[family-name:var(--font-mono)] text-white/30 uppercase">
-                                <th className="p-4 border-b border-white/5">ID</th>
-                                <th className="p-4 border-b border-white/5">FECHA</th>
-                                <th className="p-4 border-b border-white/5">CLIENTE</th>
-                                <th className="p-4 border-b border-white/5">PRODUCTO</th>
-                                <th className="p-4 border-b border-white/5 text-center">CANT.</th>
-                                <th className="p-4 border-b border-white/5 text-right">TOTAL</th>
-                                <th className="p-4 border-b border-white/5 text-center">ESTADO</th>
-                                <th className="p-4 border-b border-white/5 text-center">AVANZAR</th>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="text-[10px] uppercase text-white/40 border-b border-white/10">
+                            <th className="p-3">ID / Fecha</th>
+                            <th className="p-3">Cliente</th>
+                            <th className="p-3">Items</th>
+                            <th className="p-3">Total</th>
+                            <th className="p-3">Estado</th>
+                            <th className="p-3">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-sm font-[family-name:var(--font-mono)]">
+                        {filtered.map(o => (
+                            <tr key={o.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td className="p-3">
+                                    <span className="text-primary block">#{o.id.slice(0, 8).toUpperCase()}</span>
+                                    <span className="text-xs text-white/40">{new Date(o.created_at).toLocaleDateString()}</span>
+                                </td>
+                                <td className="p-3">
+                                    <div className="font-bold">{o.customer_name}</div>
+                                    <div className="text-xs text-white/40">{o.customer_email}</div>
+                                </td>
+                                <td className="p-3 text-xs text-white/60">
+                                    {o.items?.map(i => `${i.name} (x${i.qty})`).join(', ') || 'Sin items'}
+                                </td>
+                                <td className="p-3">${o.total}</td>
+                                <td className="p-3">
+                                    <span className={`px-2 py-1 text-[10px] uppercase font-bold border ${o.status === 'entregado' ? 'border-green-500 text-green-500 bg-green-500/10' :
+                                            o.status === 'pendiente' ? 'border-yellow-500 text-yellow-500 bg-yellow-500/10' :
+                                                'border-white/20 text-white/60'
+                                        }`}>
+                                        {o.status.replace('_', ' ')}
+                                    </span>
+                                </td>
+                                <td className="p-3">
+                                    {o.status !== 'entregado' && o.status !== 'cancelado' && (
+                                        <button onClick={() => advanceStatus(o)} className="text-[10px] bg-primary hover:bg-red-600 text-white px-3 py-1 font-bold uppercase transition-colors">
+                                            → Avanzar
+                                        </button>
+                                    )}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map((order) => {
-                                const cfg = STATUS_CONFIG[order.status]
-                                const canAdvance = STATUS_FLOW.indexOf(order.status) < STATUS_FLOW.length - 1
-                                const nextStatus = canAdvance ? STATUS_CONFIG[STATUS_FLOW[STATUS_FLOW.indexOf(order.status) + 1]] : null
-                                return (
-                                    <tr key={order.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/5 last:border-b-0">
-                                        <td className="p-4 font-[family-name:var(--font-mono)] text-xs text-technical-blue">{order.id}</td>
-                                        <td className="p-4 font-[family-name:var(--font-mono)] text-xs text-white/40">{order.date}</td>
-                                        <td className="p-4 text-white/80">{order.client}</td>
-                                        <td className="p-4 font-[family-name:var(--font-mono)] text-xs text-white/70">{order.product}</td>
-                                        <td className="p-4 font-[family-name:var(--font-mono)] text-xs text-white/50 text-center">{order.qty}</td>
-                                        <td className="p-4 font-[family-name:var(--font-mono)] text-xs text-white font-bold text-right">${order.total.toFixed(2)}</td>
-                                        <td className="p-4 text-center">
-                                            <span className={`inline-flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-mono)] px-2.5 py-1 border ${cfg.bg} ${cfg.color}`}>
-                                                <span className="material-icons text-xs">{cfg.icon}</span>{cfg.label}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            {canAdvance ? (
-                                                <button onClick={() => advanceStatus(order.id)}
-                                                    className={`text-[10px] font-[family-name:var(--font-mono)] border px-2 py-1 transition-all hover:scale-105 ${nextStatus.bg} ${nextStatus.color}`}>
-                                                    → {nextStatus.label}
-                                                </button>
-                                            ) : (
-                                                <span className="text-[10px] font-[family-name:var(--font-mono)] text-white/20">FINAL</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
+                {filtered.length === 0 && <div className="text-center py-10 text-white/30 text-xs text-[10px]">NO SE ENCONTRARON PEDIDOS</div>}
             </div>
-        </>
+        </div>
     )
 }
 
 /* ── Inventory Tab ── */
 function InventoryTab() {
-    const [inventory, setInventory] = useState(
-        products.map(p => ({ ...p, stock: p.soldOut ? 0 : Math.floor(Math.random() * 50) + 5 }))
-    )
-    const [editingId, setEditingId] = useState(null)
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
 
-    const updateStock = (id, newStock) => {
-        setInventory(prev => prev.map(p => p.id === id ? { ...p, stock: Math.max(0, newStock), soldOut: newStock <= 0 } : p))
+    useEffect(() => {
+        fetchProducts()
+    }, [])
+
+    const fetchProducts = async () => {
+        const { data } = await supabase.from('products').select('*').order('name')
+        if (data) setProducts(data)
+        setLoading(false)
     }
 
-    const toggleSoldOut = (id) => {
-        setInventory(prev => prev.map(p => p.id === id ? { ...p, soldOut: !p.soldOut, stock: !p.soldOut ? 0 : 10 } : p))
+    const updateStock = async (id, delta, current) => {
+        const newStock = Math.max(0, current + delta)
+        await supabase.from('products').update({ stock: newStock }).eq('id', id)
+        fetchProducts()
     }
 
-    const totalValue = inventory.reduce((s, p) => s + p.price * p.stock, 0)
-    const lowStock = inventory.filter(p => p.stock > 0 && p.stock <= 5).length
-    const outOfStock = inventory.filter(p => p.stock === 0).length
+    const toggleStatus = async (id, currentSoldOut) => {
+        await supabase.from('products').update({ sold_out: !currentSoldOut }).eq('id', id)
+        fetchProducts()
+    }
+
+    const seedDatabase = async () => {
+        if (!confirm('¿Seguro quieres resetear la base de datos con los productos iniciales? Esto podría duplicar si no está limpia.')) return
+        try {
+            setLoading(true)
+            const mapped = initialProducts.map(p => ({
+                id: p.id,
+                name: p.name,
+                slug: p.slug,
+                price: p.price,
+                sku: p.sku,
+                team: p.team,
+                category: p.category,
+                image: p.image,
+                image_lg: p.imageLg,
+                description: p.description,
+                specs: p.specs,
+                sizes: p.sizes,
+                stock: 50,
+                sold_out: p.soldOut,
+                tag: p.tag,
+                tag_style: p.tagStyle
+            }))
+
+            const { error } = await supabase.from('products').upsert(mapped)
+            if (error) throw error
+            alert('Base de datos poblada con éxito!')
+            fetchProducts()
+        } catch (e) {
+            alert('Error al poblar DB: ' + e.message)
+            setLoading(false)
+        }
+    }
+
+    if (loading) return <div className="text-center py-20 text-white/30 text-xs font-[family-name:var(--font-mono)]">CARGANDO_INVENTARIO...</div>
 
     return (
-        <>
-            {/* Inventory KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-                {[
-                    { label: 'Total SKUs', value: inventory.length, icon: 'category', color: 'text-white' },
-                    { label: 'Valor Inventario', value: `$${totalValue.toLocaleString()}`, icon: 'account_balance', color: 'text-technical-blue' },
-                    { label: 'Stock Bajo (≤5)', value: lowStock, icon: 'warning', color: 'text-yellow-400' },
-                    { label: 'Agotados', value: outOfStock, icon: 'block', color: 'text-primary' },
-                ].map((kpi) => (
-                    <div key={kpi.label} className="bg-asphalt border border-white/5 p-4 hover:border-white/20 transition-colors">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className={`material-icons text-base ${kpi.color}`}>{kpi.icon}</span>
-                            <span className="font-[family-name:var(--font-mono)] text-[10px] text-white/40 uppercase">{kpi.label}</span>
-                        </div>
-                        <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
-                    </div>
-                ))}
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-asphalt border border-white/10 p-4">
+                <div>
+                    <h2 className="text-lg font-bold">Gestión de Inventario</h2>
+                    <p className="text-xs text-white/40">Control de stock y visibilidad de productos</p>
+                </div>
+                {products.length === 0 && (
+                    <button onClick={seedDatabase} className="bg-primary hover:bg-green-600 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                        <span className="material-icons text-sm">database</span> Inicializar DB (Seed)
+                    </button>
+                )}
             </div>
 
-            {/* Inventory Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {inventory.map((item) => (
-                    <div key={item.id} className={`bg-asphalt border p-4 transition-all ${item.soldOut ? 'border-primary/30 opacity-75' : item.stock <= 5 ? 'border-yellow-400/30' : 'border-white/10'}`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products.map(p => (
+                    <div key={p.id} className={`bg-asphalt border p-4 relative group ${p.sold_out ? 'border-red-500/30' : 'border-white/10'}`}>
                         <div className="flex gap-4">
-                            <img src={item.image} alt={item.name} className={`w-20 h-20 object-cover border border-white/5 ${item.soldOut ? 'grayscale' : ''}`} />
+                            <img src={p.image} alt={p.name} className={`w-16 h-16 object-cover ${p.sold_out ? 'grayscale' : ''}`} />
                             <div className="flex-1">
-                                <h4 className="font-bold text-white uppercase text-sm tracking-wide">{item.name}</h4>
-                                <p className="font-[family-name:var(--font-mono)] text-[10px] text-white/30 mb-2">{item.sku}</p>
-                                <div className="flex items-center gap-3">
-                                    <span className="font-[family-name:var(--font-mono)] text-sm text-primary font-bold">${item.price.toFixed(2)}</span>
-                                    <span className={`font-[family-name:var(--font-mono)] text-[10px] px-2 py-0.5 border ${item.soldOut ? 'border-primary/30 text-primary bg-primary/10' :
-                                            item.stock <= 5 ? 'border-yellow-400/30 text-yellow-400 bg-yellow-400/10' :
-                                                'border-green-400/30 text-green-400 bg-green-400/10'
-                                        }`}>
-                                        {item.soldOut ? 'AGOTADO' : `${item.stock} uds`}
+                                <h3 className="font-bold text-sm truncate">{p.name}</h3>
+                                <p className="text-[10px] text-white/40 font-[family-name:var(--font-mono)] mb-2">{p.sku}</p>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-primary font-bold">${p.price}</span>
+                                    <span className={`text-[10px] uppercase px-2 py-0.5 border ${p.sold_out ? 'border-red-500 text-red-500' : 'border-green-500 text-green-500'}`}>
+                                        {p.sold_out ? 'Agotado' : 'Activo'}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Controls */}
-                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-                            {editingId === item.id ? (
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => updateStock(item.id, item.stock - 1)}
-                                        className="w-7 h-7 border border-white/20 text-white/50 hover:border-primary hover:text-primary text-sm flex items-center justify-center">−</button>
-                                    <span className="font-[family-name:var(--font-mono)] text-sm w-8 text-center text-white">{item.stock}</span>
-                                    <button onClick={() => updateStock(item.id, item.stock + 1)}
-                                        className="w-7 h-7 border border-white/20 text-white/50 hover:border-primary hover:text-primary text-sm flex items-center justify-center">+</button>
-                                    <button onClick={() => setEditingId(null)}
-                                        className="text-[10px] font-[family-name:var(--font-mono)] text-green-400 border border-green-400/30 px-2 py-1 ml-2 hover:bg-green-400/10">OK</button>
-                                </div>
-                            ) : (
-                                <button onClick={() => setEditingId(item.id)}
-                                    className="text-[10px] font-[family-name:var(--font-mono)] text-white/40 border border-white/10 px-2 py-1 hover:border-primary hover:text-primary transition-all">
-                                    <span className="material-icons text-xs align-middle mr-1">edit</span>STOCK
-                                </button>
-                            )}
-                            <button onClick={() => toggleSoldOut(item.id)}
-                                className={`text-[10px] font-[family-name:var(--font-mono)] border px-2 py-1 transition-all ${item.soldOut ? 'border-green-400/30 text-green-400 hover:bg-green-400/10' : 'border-primary/30 text-primary hover:bg-primary/10'
-                                    }`}>
-                                {item.soldOut ? 'ACTIVAR' : 'AGOTAR'}
+                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] uppercase text-white/40">Stock:</span>
+                                <button onClick={() => updateStock(p.id, -1, p.stock)} className="w-6 h-6 bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">-</button>
+                                <span className="w-8 text-center font-[family-name:var(--font-mono)] text-sm">{p.stock}</span>
+                                <button onClick={() => updateStock(p.id, 1, p.stock)} className="w-6 h-6 bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">+</button>
+                            </div>
+                            <button onClick={() => toggleStatus(p.id, p.sold_out)} className="text-[10px] underline text-white/30 hover:text-white">
+                                {p.sold_out ? 'Activar Producto' : 'Marcar Agotado'}
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-        </>
-    )
-}
-
-/* ── Admin Dashboard (Tabbed) ── */
-function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState('pedidos')
-
-    const tabs = [
-        { key: 'pedidos', label: 'Pedidos', icon: 'receipt_long' },
-        { key: 'inventario', label: 'Inventario', icon: 'inventory' },
-    ]
-
-    return (
-        <div className="min-h-screen bg-background-dark text-white">
-            <header className="fixed top-0 left-0 w-full z-50 bg-carbon/95 backdrop-blur border-b border-white/10 h-16 flex items-center px-6 justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 bg-primary/20 border border-primary/50 flex items-center justify-center">
-                        <span className="material-icons text-primary text-sm">admin_panel_settings</span>
-                    </div>
-                    <div>
-                        <h1 className="text-sm font-bold uppercase tracking-widest">El Garaje — Admin</h1>
-                        <p className="font-[family-name:var(--font-mono)] text-[10px] text-white/30">
-                            {activeTab === 'pedidos' ? 'GESTIÓN DE PEDIDOS' : 'GESTIÓN DE INVENTARIO'}
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    {/* Tab Switcher in Header */}
-                    <div className="hidden md:flex border border-white/10 overflow-hidden">
-                        {tabs.map(tab => (
-                            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                                className={`flex items-center gap-1.5 px-4 py-2 text-[11px] font-[family-name:var(--font-mono)] uppercase tracking-wider transition-all ${activeTab === tab.key ? 'bg-primary/20 text-white border-primary' : 'text-white/40 hover:text-white hover:bg-white/5'
-                                    }`}>
-                                <span className="material-icons text-sm">{tab.icon}</span>{tab.label}
-                            </button>
-                        ))}
-                    </div>
-                    <button onClick={() => window.location.reload()}
-                        className="text-xs font-[family-name:var(--font-mono)] text-white/40 hover:text-primary border border-white/10 hover:border-primary px-3 py-1.5 transition-all">
-                        SALIR
-                    </button>
-                </div>
-            </header>
-
-            {/* Mobile Tab Switcher */}
-            <div className="md:hidden fixed top-16 left-0 w-full z-40 bg-carbon/95 backdrop-blur border-b border-white/10 flex">
-                {tabs.map(tab => (
-                    <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-[11px] font-[family-name:var(--font-mono)] uppercase tracking-wider transition-all ${activeTab === tab.key ? 'bg-primary/10 text-white border-b-2 border-primary' : 'text-white/40'
-                            }`}>
-                        <span className="material-icons text-sm">{tab.icon}</span>{tab.label}
-                    </button>
-                ))}
-            </div>
-
-            <main className="pt-24 md:pt-24 pb-16 px-4 md:px-12 max-w-[1400px] mx-auto">
-                <div className="md:hidden h-12"></div>
-                {activeTab === 'pedidos' ? <OrdersTab /> : <InventoryTab />}
-            </main>
-
-            <footer className="border-t border-white/10 px-6 py-4 flex flex-col md:flex-row justify-between items-center text-[10px] font-[family-name:var(--font-mono)] text-white/20 gap-2">
-                <div className="flex gap-6">
-                    <span>SISTEMA: <span className="text-green-400">OPERATIVO</span></span>
-                    <span>API: v4.2.1</span>
-                    <span>REGIÓN: VE-CCS-1</span>
-                </div>
-                <span>© 2024 RENNSPORT ENGINEERING — PANEL ADMINISTRATIVO</span>
-            </footer>
+            {products.length === 0 && <div className="text-center py-20 text-white/30">No hay productos. Usa el botón de Seed para comenzar.</div>}
         </div>
     )
-}
-
-/* ── Main Export ── */
-export default function DashboardPage() {
-    const [authed, setAuthed] = useState(false)
-    if (!authed) return <AdminLogin onLogin={() => setAuthed(true)} />
-    return <AdminDashboard />
 }
