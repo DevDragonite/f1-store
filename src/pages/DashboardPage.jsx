@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { getAssetUrl } from '../utils/assets'
 import useAuthStore from '../stores/useAuthStore'
 import initialProducts from '../data/products' // For seeding
 
@@ -346,7 +347,7 @@ function InventoryTab() {
                         )}
 
                         <div className="flex gap-4">
-                            <img src={p.image} alt={p.name} className={`w-16 h-16 object-cover ${p.sold_out ? 'grayscale' : ''}`} />
+                            <img src={getAssetUrl(p.image)} alt={p.name} className={`w-16 h-16 object-cover ${p.sold_out ? 'grayscale' : ''}`} />
                             <div className="flex-1 min-w-0">
                                 <h3 className="font-bold text-sm truncate">{p.name}</h3>
                                 <p className="text-[10px] text-white/40 font-[family-name:var(--font-mono)] mb-2">{p.sku}</p>
