@@ -137,13 +137,13 @@ export default function Navbar() {
 
                             {/* Dropdown Panel */}
                             {accountOpen && (
-                                <div className="absolute right-0 top-full mt-3 w-[85vw] sm:w-72 bg-carbon/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 z-50" style={{ animation: 'fadeInDown 0.2s ease-out' }}>
+                                <div className="fixed left-4 right-4 top-20 sm:absolute sm:right-0 sm:left-auto sm:top-full sm:mt-3 sm:w-72 bg-carbon/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 z-50" style={{ animation: 'fadeInDown 0.2s ease-out' }}>
                                     {/* Decorative top bar */}
                                     <div className="h-[2px] bg-gradient-to-r from-primary via-primary/50 to-transparent" />
 
                                     {user ? (
                                         /* ── Logged In State ── */
-                                        <div className="p-5">
+                                        <div className="p-4 sm:p-5">
                                             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
                                                 <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
                                                     <span className="material-symbols-outlined text-primary">person</span>
@@ -163,7 +163,7 @@ export default function Navbar() {
                                         </div>
                                     ) : (
                                         /* ── Auth Form ── */
-                                        <div className="p-5">
+                                        <div className="p-4 sm:p-5">
                                             <p className="text-xs font-[family-name:var(--font-mono)] text-primary tracking-widest uppercase mb-4">
                                                 {authMode === 'login' ? '/// Iniciar Sesión' : '/// Crear Cuenta'}
                                             </p>
