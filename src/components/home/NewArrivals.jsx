@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getAssetUrl } from '../../utils/assets'
 
 const products = [
@@ -68,12 +69,14 @@ function getSlotIndex(productIndex, activeIndex, total) {
 }
 
 const CarouselCard = memo(function CarouselCard({ product, slot }) {
+    const navigate = useNavigate()
     const style = SLOT_STYLES[slot]
     if (!style) return null
 
     return (
         <div
             className="absolute top-0 left-1/2 w-[70vw] sm:w-[320px] md:w-[380px] cursor-pointer"
+            onClick={() => slot === 2 && navigate('/catalog')}
             style={{
                 transform: `translateX(calc(-50% + ${style.x})) scale(${style.scale})`,
                 zIndex: style.z + 200,

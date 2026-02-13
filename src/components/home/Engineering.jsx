@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { Link } from 'react-router-dom'
 import { getAssetUrl } from '../../utils/assets'
 
 const Engineering = memo(function Engineering() {
@@ -54,9 +55,9 @@ const Engineering = memo(function Engineering() {
                             </div>
                         ))}
                     </div>
-                    <button className="mt-8 self-start px-6 py-3 border border-primary text-primary hover:bg-primary hover:text-white transition-all text-xs font-bold uppercase tracking-[0.15em]">
+                    <Link to="/catalog" className="mt-8 self-start px-6 py-3 border border-primary text-primary hover:bg-primary hover:text-white transition-all text-xs font-bold uppercase tracking-[0.15em] inline-block">
                         Ver Ficha Técnica
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>
