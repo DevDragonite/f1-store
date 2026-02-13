@@ -10,24 +10,15 @@ const Engineering = memo(function Engineering() {
                 <div className="order-2 lg:order-1 relative">
                     <div className="relative rounded-sm overflow-hidden border border-white/10 group">
                         <img
-                            alt="Textura de fibra de carbono en primer plano"
+                            alt="Suéter Scuderia Ferrari — detalle de materiales premium"
                             loading="lazy"
                             decoding="async"
                             className="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 opacity-80"
-                            src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=80&auto=format"
+                            src="/Images/Ferrari/Scuderia-Ferrari-Sweater-2.png"
                         />
                         <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none">
                             <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary"></div>
                             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary"></div>
-                            <div className="absolute top-0 left-0 w-full h-[2px] bg-primary/50 shadow-[0_0_15px_rgba(224,7,0,0.8)] animate-[scan_4s_ease-in-out_infinite]"></div>
-                        </div>
-                        <div className="absolute top-1/4 left-1/4 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
-                            <span className="text-[10px] font-[family-name:var(--font-mono)] text-white bg-black/50 px-1 backdrop-blur-sm">ZONA DE IMPACTO</span>
-                        </div>
-                        <div className="absolute bottom-1/3 right-1/4 flex items-center gap-2">
-                            <span className="text-[10px] font-[family-name:var(--font-mono)] text-white bg-black/50 px-1 backdrop-blur-sm">DISIPACIÓN TÉRMICA</span>
-                            <div className="w-2 h-2 bg-primary rounded-full animate-ping delay-75"></div>
                         </div>
                     </div>
                 </div>
@@ -43,14 +34,14 @@ const Engineering = memo(function Engineering() {
                         <span className="text-white/30 italic">Probado en pista.</span>
                     </h2>
                     <p className="text-white/60 leading-relaxed font-light">
-                        Nuestros materiales provienen de los mismos proveedores que los principales constructores de F1. Fibras Nomex para resistencia al fuego, tejidos con infusión de carbono para durabilidad y cortes aerodinámicos que reducen la resistencia. Esto no es solo moda; es ingeniería de alto rendimiento para tu día a día.
+                        Cada prenda Rennsport está confeccionada con algodón premium de 400 gramos, hilado en Italia con fibras de larga grapa que garantizan suavidad extrema y durabilidad excepcional. El interior afelpado proporciona una sensación de lujo artesanal, mientras que los acabados técnicos — costuras reforzadas, tintes de alta fijación y etiquetas tejidas — aseguran una pieza que mantiene su forma y color lavado tras lavado.
                     </p>
                     <div className="grid grid-cols-2 gap-6 mt-6 border-t border-white/10 pt-8">
                         {[
-                            { label: 'Material', value: 'Polímero con Infusión de Carbono' },
-                            { label: 'Peso', value: 'Ultra-ligero (240g)' },
-                            { label: 'Origen', value: 'Maranello, Italia' },
-                            { label: 'Durabilidad', value: 'Grado A+ (Industrial)' },
+                            { label: 'Material', value: 'Algodón Premium 400g' },
+                            { label: 'Interior', value: 'Afelpado de Lujo' },
+                            { label: 'Origen', value: 'Hilado en Italia' },
+                            { label: 'Durabilidad', value: 'Grado A+ (Alta Fijación)' },
                         ].map((spec) => (
                             <div key={spec.label}>
                                 <h4 className="text-white font-bold uppercase tracking-wider mb-2 text-sm">{spec.label}</h4>

@@ -27,6 +27,7 @@ export default function useProducts() {
                         imageLg: p.image_lg, // critical mapping
                         soldOut: p.sold_out,
                         tagStyle: p.tag_style,
+                        discount: p.discount || 0,
                     }))
                     setProducts(mapped)
                 }

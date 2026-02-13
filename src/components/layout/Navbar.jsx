@@ -1,14 +1,81 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useCartStore from '../../stores/useCartStore'
+import useAuthStore from '../../stores/useAuthStore'
 
 export default function Navbar() {
     const totalItems = useCartStore(s => s.items.reduce((sum, i) => sum + i.qty, 0))
     const [mobileOpen, setMobileOpen] = useState(false)
     const location = useLocation()
 
+    /* ── Auth state ── */
+    const { user, signIn, signUp, signOut } = useAuthStore()
+    const [accountOpen, setAccountOpen] = useState(false)
+    const [authMode, setAuthMode] = useState('login') // 'login' | 'register'
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [authError, setAuthError] = useState('')
+    const [authLoading, setAuthLoading] = useState(false)
+    const [authSuccess, setAuthSuccess] = useState('')
+    const dropdownRef = useRef(null)
+
     // Close mobile menu on route change
     useEffect(() => { setMobileOpen(false) }, [location.pathname])
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setAccountOpen(false)
+            }
+        }
+        if (accountOpen) {
+            document.addEventListener('mousedown', handleClickOutside)
+            return () => document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [accountOpen])
+
+    // Close on Escape
+    useEffect(() => {
+        function handleEscape(e) {
+            if (e.key === 'Escape') setAccountOpen(false)
+        }
+        if (accountOpen) {
+            document.addEventListener('keydown', handleEscape)
+            return () => document.removeEventListener('keydown', handleEscape)
+        }
+    }, [accountOpen])
+
+    const handleAuth = async (e) => {
+        e.preventDefault()
+        setAuthError('')
+        setAuthSuccess('')
+        setAuthLoading(true)
+        try {
+            if (authMode === 'login') {
+                await signIn(email, password)
+                setAccountOpen(false)
+                setEmail('')
+                setPassword('')
+            } else {
+                await signUp(email, password, { role: 'customer' })
+                setAuthSuccess('¡Cuenta creada! Revisa tu correo para confirmar.')
+                setEmail('')
+                setPassword('')
+            }
+        } catch (err) {
+            setAuthError(err.message === 'Invalid login credentials'
+                ? 'Credenciales inválidas'
+                : err.message || 'Error al autenticar')
+        } finally {
+            setAuthLoading(false)
+        }
+    }
+
+    const handleSignOut = async () => {
+        await signOut()
+        setAccountOpen(false)
+    }
 
     const navLinks = [
         { label: 'Tienda', to: '/catalog' },
@@ -50,6 +117,104 @@ export default function Navbar() {
                         <Link to="/catalog" className="p-2.5 hover:bg-white/10 rounded-full transition-all hover:scale-110 active:scale-95">
                             <span className="material-symbols-outlined text-xl">search</span>
                         </Link>
+
+                        {/* Mi Cuenta Dropdown */}
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => { setAccountOpen(!accountOpen); setAuthError(''); setAuthSuccess('') }}
+                                className={`p-2.5 rounded-full transition-all hover:scale-110 active:scale-95 ${accountOpen || user ? 'bg-primary/20 text-primary' : 'hover:bg-white/10 text-white'}`}
+                                aria-label="Mi Cuenta"
+                            >
+                                <span className="material-symbols-outlined text-xl">
+                                    {user ? 'person' : 'person_outline'}
+                                </span>
+                            </button>
+
+                            {/* Dropdown Panel */}
+                            {accountOpen && (
+                                <div className="absolute right-0 top-full mt-3 w-72 bg-carbon/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 z-50" style={{ animation: 'fadeInDown 0.2s ease-out' }}>
+                                    {/* Decorative top bar */}
+                                    <div className="h-[2px] bg-gradient-to-r from-primary via-primary/50 to-transparent" />
+
+                                    {user ? (
+                                        /* ── Logged In State ── */
+                                        <div className="p-5">
+                                            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+                                                <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-primary">person</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-[family-name:var(--font-mono)] text-primary tracking-widest uppercase">Mi Cuenta</p>
+                                                    <p className="text-white/60 text-xs truncate">{user.email}</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={handleSignOut}
+                                                className="w-full text-left px-3 py-2.5 text-sm text-white/60 hover:text-primary hover:bg-white/5 transition-colors flex items-center gap-2"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">logout</span>
+                                                Cerrar Sesión
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        /* ── Auth Form ── */
+                                        <div className="p-5">
+                                            <p className="text-xs font-[family-name:var(--font-mono)] text-primary tracking-widest uppercase mb-4">
+                                                {authMode === 'login' ? '/// Iniciar Sesión' : '/// Crear Cuenta'}
+                                            </p>
+
+                                            <form onSubmit={handleAuth} className="space-y-3">
+                                                <input
+                                                    type="email"
+                                                    value={email}
+                                                    onChange={e => setEmail(e.target.value)}
+                                                    placeholder="tu@correo.com"
+                                                    required
+                                                    className="w-full bg-asphalt border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                                                />
+                                                <input
+                                                    type="password"
+                                                    value={password}
+                                                    onChange={e => setPassword(e.target.value)}
+                                                    placeholder="Contraseña"
+                                                    required
+                                                    minLength={6}
+                                                    className="w-full bg-asphalt border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                                                />
+
+                                                {authError && (
+                                                    <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 px-3 py-2">{authError}</p>
+                                                )}
+                                                {authSuccess && (
+                                                    <p className="text-xs text-green-400 bg-green-400/10 border border-green-400/20 px-3 py-2">{authSuccess}</p>
+                                                )}
+
+                                                <button
+                                                    type="submit"
+                                                    disabled={authLoading}
+                                                    className="w-full bg-primary text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-red-600 transition-colors disabled:opacity-50"
+                                                >
+                                                    {authLoading ? 'Cargando...' : authMode === 'login' ? 'Entrar' : 'Registrarse'}
+                                                </button>
+                                            </form>
+
+                                            <div className="mt-4 pt-3 border-t border-white/10 text-center">
+                                                <button
+                                                    onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError(''); setAuthSuccess('') }}
+                                                    className="text-xs text-white/40 hover:text-primary transition-colors"
+                                                >
+                                                    {authMode === 'login'
+                                                        ? '¿No tienes cuenta? Regístrate'
+                                                        : '¿Ya tienes cuenta? Inicia sesión'
+                                                    }
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
                         <Link to="/cart" className="p-2.5 hover:bg-white/10 rounded-full transition-all hover:scale-110 active:scale-95 relative">
                             <span className="material-symbols-outlined text-xl">shopping_bag</span>
                             {totalItems > 0 ? (

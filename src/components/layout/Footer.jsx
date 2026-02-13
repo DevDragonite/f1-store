@@ -6,7 +6,12 @@ export default function Footer() {
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 mb-20">
                     {/* Brand */}
                     <div>
-                        <h2 className="font-[family-name:var(--font-serif)] text-6xl md:text-8xl text-white/10 hover:text-white/30 transition-colors cursor-default select-none">
+                        <h2
+                            className="font-[family-name:var(--font-serif)] text-6xl md:text-8xl text-white/10 cursor-default select-none transition-all duration-500 hover:text-[#E00700] hover:tracking-wider"
+                            style={{ transition: 'color 0.5s, text-shadow 0.5s, letter-spacing 0.6s ease-out' }}
+                            onMouseEnter={e => { e.currentTarget.style.textShadow = '0 0 40px rgba(224,7,0,0.6), 8px 0 60px rgba(224,7,0,0.3)' }}
+                            onMouseLeave={e => { e.currentTarget.style.textShadow = 'none' }}
+                        >
                             Renn <br /> sport
                         </h2>
                     </div>

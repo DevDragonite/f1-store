@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS products (
   stock INTEGER DEFAULT 50,
   sold_out BOOLEAN DEFAULT false,
   tag TEXT,
-  tag_style TEXT
+  tag_style TEXT,
+  discount INTEGER DEFAULT 0
 );
 
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;

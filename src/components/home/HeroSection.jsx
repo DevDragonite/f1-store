@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 export default function HeroSection() {
     const videoRef = useRef(null)
@@ -57,16 +58,16 @@ export default function HeroSection() {
                 </p>
 
                 <div className="flex flex-wrap gap-4">
-                    <button className="group relative px-8 py-4 bg-primary text-white font-bold text-sm uppercase tracking-widest overflow-hidden">
+                    <Link to="/catalog" className="group relative px-8 py-4 bg-primary text-white font-bold text-sm uppercase tracking-widest overflow-hidden inline-flex items-center">
                         <span className="relative z-10 flex items-center gap-2">
                             Explorar Colección
                             <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </span>
                         <div className="absolute inset-0 bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300 z-0 opacity-10"></div>
-                    </button>
-                    <button className="px-8 py-4 border border-white/20 hover:border-white text-white font-medium text-sm uppercase tracking-widest transition-colors">
-                        Ver Lookbook
-                    </button>
+                    </Link>
+                    <Link to="/editorial" className="px-8 py-4 border border-white/20 hover:border-white text-white font-medium text-sm uppercase tracking-widest transition-colors inline-flex items-center">
+                        Ver Editorial
+                    </Link>
                 </div>
             </div>
 

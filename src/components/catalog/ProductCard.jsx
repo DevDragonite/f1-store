@@ -40,11 +40,19 @@ const ProductCard = memo(function ProductCard({ product }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
 
-                {tag && (
-                    <div className={`absolute top-4 right-4 text-[10px] font-[family-name:var(--font-mono)] px-2 py-1 border backdrop-blur ${tagStyle}`}>
-                        {tag}
-                    </div>
-                )}
+                {/* Tags & Badges */}
+                <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                    {tag && (
+                        <div className={`text-[10px] font-[family-name:var(--font-mono)] px-2 py-1 border backdrop-blur ${tagStyle}`}>
+                            {tag}
+                        </div>
+                    )}
+                    {(product.discount || 0) > 0 && !soldOut && (
+                        <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 shadow-lg">
+                            -{product.discount}% OFF
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="p-5 relative">
@@ -52,15 +60,28 @@ const ProductCard = memo(function ProductCard({ product }) {
                     <h3 className="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">
                         {name}
                     </h3>
-                    <div className={`font-[family-name:var(--font-mono)] text-sm ${soldOut ? 'text-gray-500 line-through' : 'text-primary'}`}>
-                        ${typeof price === 'number' ? price.toFixed(2) : price}
+                    <div className="text-right">
+                        {(product.discount || 0) > 0 ? (
+                            <>
+                                <div className="text-xs text-gray-500 line-through font-[family-name:var(--font-mono)]">
+                                    ${Number(price).toFixed(2)}
+                                </div>
+                                <div className="text-sm text-green-400 font-bold font-[family-name:var(--font-mono)]">
+                                    ${(price * (1 - product.discount / 100)).toFixed(2)}
+                                </div>
+                            </>
+                        ) : (
+                            <div className={`font-[family-name:var(--font-mono)] text-sm ${soldOut ? 'text-gray-500 line-through' : 'text-primary'}`}>
+                                ${typeof price === 'number' ? price.toFixed(2) : price}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <p className="text-xs text-gray-500 font-[family-name:var(--font-mono)] mb-4">{sku}</p>
 
                 <div className={`absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t ${soldOut ? 'border-primary/30' : 'border-technical-blue/30'} p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 ${soldOut ? 'shadow-[0_-5px_20px_rgba(224,7,0,0.1)]' : 'shadow-[0_-5px_20px_rgba(0,240,255,0.1)]'}`}>
                     <div className="grid grid-cols-2 gap-2 text-[10px] font-[family-name:var(--font-mono)] text-gray-400 border-b border-white/10 pb-2">
-                        {product.specs.map((spec, i) => (
+                        {(product.specs || []).map((spec, i) => (
                             <span key={i} className={i % 2 !== 0 ? 'text-right' : ''}>
                                 {spec}
                             </span>

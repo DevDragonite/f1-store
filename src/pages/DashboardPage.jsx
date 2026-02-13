@@ -187,8 +187,8 @@ function OrdersTab() {
                                 <td className="p-3">${o.total}</td>
                                 <td className="p-3">
                                     <span className={`px-2 py-1 text-[10px] uppercase font-bold border ${o.status === 'entregado' ? 'border-green-500 text-green-500 bg-green-500/10' :
-                                            o.status === 'pendiente' ? 'border-yellow-500 text-yellow-500 bg-yellow-500/10' :
-                                                'border-white/20 text-white/60'
+                                        o.status === 'pendiente' ? 'border-yellow-500 text-yellow-500 bg-yellow-500/10' :
+                                            'border-white/20 text-white/60'
                                         }`}>
                                         {o.status.replace('_', ' ')}
                                     </span>
@@ -214,6 +214,10 @@ function OrdersTab() {
 function InventoryTab() {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [editingPrice, setEditingPrice] = useState(null) // product id being edited
+    const [editPriceValue, setEditPriceValue] = useState('')
+    const [editingDiscount, setEditingDiscount] = useState(null)
+    const [editDiscountValue, setEditDiscountValue] = useState('')
 
     useEffect(() => {
         fetchProducts()
@@ -236,37 +240,85 @@ function InventoryTab() {
         fetchProducts()
     }
 
+    // ── Price editing ──
+    const startEditPrice = (product) => {
+        setEditingPrice(product.id)
+        setEditPriceValue(String(product.price))
+    }
+
+    const savePrice = async (id) => {
+        const newPrice = parseFloat(editPriceValue)
+        if (isNaN(newPrice) || newPrice < 0) {
+            setEditingPrice(null)
+            return
+        }
+        await supabase.from('products').update({ price: newPrice }).eq('id', id)
+        setEditingPrice(null)
+        fetchProducts()
+    }
+
+    // ── Discount editing ──
+    const startEditDiscount = (product) => {
+        setEditingDiscount(product.id)
+        setEditDiscountValue(String(product.discount || 0))
+    }
+
+    const saveDiscount = async (id) => {
+        const disc = parseInt(editDiscountValue, 10)
+        const finalDiscount = isNaN(disc) ? 0 : Math.min(100, Math.max(0, disc))
+        await supabase.from('products').update({ discount: finalDiscount }).eq('id', id)
+        setEditingDiscount(null)
+        fetchProducts()
+    }
+
     const seedDatabase = async () => {
-        if (!confirm('¿Seguro quieres resetear la base de datos con los productos iniciales? Esto podría duplicar si no está limpia.')) return
+        if (!confirm('¿Seguro quieres resetear la base de datos con los 18 productos nuevos? Se borrarán los productos actuales.')) return
         try {
             setLoading(true)
+
+            // 1. Delete existing products to avoid unique constraint conflicts
+            await supabase.from('products').delete().neq('id', '___placeholder___')
+
+            // 2. Map frontend data to DB columns
             const mapped = initialProducts.map(p => ({
                 id: p.id,
                 name: p.name,
                 slug: p.slug,
                 price: p.price,
                 sku: p.sku,
-                team: p.team,
-                category: p.category,
+                team: p.team || null,
+                category: p.category || null,
                 image: p.image,
-                image_lg: p.imageLg,
-                description: p.description,
-                specs: p.specs,
-                sizes: p.sizes,
+                image_lg: p.imageLg || p.image,
+                description: p.description || null,
+                specs: p.specs || [],
+                sizes: p.sizes || [],
                 stock: 50,
-                sold_out: p.soldOut,
-                tag: p.tag,
-                tag_style: p.tagStyle
+                sold_out: p.soldOut || false,
+                tag: p.tag || null,
+                tag_style: p.tagStyle || null,
+                discount: 0
             }))
 
-            const { error } = await supabase.from('products').upsert(mapped)
-            if (error) throw error
-            alert('Base de datos poblada con éxito!')
+            // 3. Insert fresh products
+            const { error } = await supabase.from('products').insert(mapped)
+            if (error) {
+                console.error('Seed error details:', error)
+                throw error
+            }
+            alert(`¡Éxito! ${mapped.length} productos insertados en la base de datos.`)
             fetchProducts()
         } catch (e) {
-            alert('Error al poblar DB: ' + e.message)
+            console.error('Seed failed:', e)
+            alert('Error al poblar DB: ' + (e.message || JSON.stringify(e)))
             setLoading(false)
         }
+    }
+
+    const getFinalPrice = (p) => {
+        const disc = p.discount || 0
+        if (disc > 0) return (p.price * (1 - disc / 100)).toFixed(2)
+        return Number(p.price).toFixed(2)
     }
 
     if (loading) return <div className="text-center py-20 text-white/30 text-xs font-[family-name:var(--font-mono)]">CARGANDO_INVENTARIO...</div>
@@ -276,25 +328,29 @@ function InventoryTab() {
             <div className="flex justify-between items-center bg-asphalt border border-white/10 p-4">
                 <div>
                     <h2 className="text-lg font-bold">Gestión de Inventario</h2>
-                    <p className="text-xs text-white/40">Control de stock y visibilidad de productos</p>
+                    <p className="text-xs text-white/40">Control de stock, precios y descuentos</p>
                 </div>
-                {products.length === 0 && (
-                    <button onClick={seedDatabase} className="bg-primary hover:bg-green-600 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
-                        <span className="material-icons text-sm">database</span> Inicializar DB (Seed)
-                    </button>
-                )}
+                <button onClick={seedDatabase} className="bg-primary hover:bg-red-600 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                    <span className="material-icons text-sm">database</span> Inicializar DB (Seed)
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {products.map(p => (
                     <div key={p.id} className={`bg-asphalt border p-4 relative group ${p.sold_out ? 'border-red-500/30' : 'border-white/10'}`}>
+                        {/* Discount badge */}
+                        {(p.discount || 0) > 0 && (
+                            <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 z-10">
+                                -{p.discount}%
+                            </div>
+                        )}
+
                         <div className="flex gap-4">
                             <img src={p.image} alt={p.name} className={`w-16 h-16 object-cover ${p.sold_out ? 'grayscale' : ''}`} />
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                                 <h3 className="font-bold text-sm truncate">{p.name}</h3>
                                 <p className="text-[10px] text-white/40 font-[family-name:var(--font-mono)] mb-2">{p.sku}</p>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-primary font-bold">${p.price}</span>
                                     <span className={`text-[10px] uppercase px-2 py-0.5 border ${p.sold_out ? 'border-red-500 text-red-500' : 'border-green-500 text-green-500'}`}>
                                         {p.sold_out ? 'Agotado' : 'Activo'}
                                     </span>
@@ -302,7 +358,73 @@ function InventoryTab() {
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                        {/* ── Price & Discount Row ── */}
+                        <div className="mt-3 pt-3 border-t border-white/5 grid grid-cols-2 gap-3">
+                            {/* Price */}
+                            <div>
+                                <span className="text-[10px] uppercase text-white/40 block mb-1">Precio Base</span>
+                                {editingPrice === p.id ? (
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={editPriceValue}
+                                        onChange={(e) => setEditPriceValue(e.target.value)}
+                                        onBlur={() => savePrice(p.id)}
+                                        onKeyDown={(e) => e.key === 'Enter' && savePrice(p.id)}
+                                        autoFocus
+                                        className="w-full bg-black/50 border border-primary text-primary font-bold text-sm px-2 py-1 font-[family-name:var(--font-mono)] outline-none"
+                                    />
+                                ) : (
+                                    <button
+                                        onClick={() => startEditPrice(p)}
+                                        className="text-primary font-bold text-sm font-[family-name:var(--font-mono)] hover:bg-white/5 px-2 py-1 border border-transparent hover:border-white/10 transition-all w-full text-left flex items-center gap-1"
+                                        title="Click para editar precio"
+                                    >
+                                        ${Number(p.price).toFixed(2)}
+                                        <span className="material-icons text-[10px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Discount */}
+                            <div>
+                                <span className="text-[10px] uppercase text-white/40 block mb-1">Descuento %</span>
+                                {editingDiscount === p.id ? (
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={editDiscountValue}
+                                        onChange={(e) => setEditDiscountValue(e.target.value)}
+                                        onBlur={() => saveDiscount(p.id)}
+                                        onKeyDown={(e) => e.key === 'Enter' && saveDiscount(p.id)}
+                                        autoFocus
+                                        className="w-full bg-black/50 border border-green-500 text-green-400 font-bold text-sm px-2 py-1 font-[family-name:var(--font-mono)] outline-none"
+                                    />
+                                ) : (
+                                    <button
+                                        onClick={() => startEditDiscount(p)}
+                                        className={`text-sm font-[family-name:var(--font-mono)] hover:bg-white/5 px-2 py-1 border border-transparent hover:border-white/10 transition-all w-full text-left flex items-center gap-1 ${(p.discount || 0) > 0 ? 'text-green-400 font-bold' : 'text-white/30'}`}
+                                        title="Click para editar descuento"
+                                    >
+                                        {(p.discount || 0) > 0 ? `${p.discount}%` : '0%'}
+                                        <span className="material-icons text-[10px] text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Final price display */}
+                        {(p.discount || 0) > 0 && (
+                            <div className="mt-2 flex items-center gap-2">
+                                <span className="text-[10px] text-white/40">Precio Final:</span>
+                                <span className="text-white/40 line-through text-xs">${Number(p.price).toFixed(2)}</span>
+                                <span className="text-green-400 font-bold text-sm">${getFinalPrice(p)}</span>
+                            </div>
+                        )}
+
+                        {/* Stock & Status Controls */}
+                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] uppercase text-white/40">Stock:</span>
                                 <button onClick={() => updateStock(p.id, -1, p.stock)} className="w-6 h-6 bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10">-</button>

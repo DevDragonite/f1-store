@@ -20,7 +20,7 @@ export default function EditorialPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
                     <div className="aspect-[4/3] bg-asphalt border border-white/10 overflow-hidden relative group">
                         <img
-                            src="https://images.unsplash.com/photo-1541889413-d0ae82e0daa6?w=800&q=80&auto=format"
+                            src="/Images/Editorial/editorial-1.jpg"
                             alt="Auto F1 en pista"
                             loading="lazy"
                             decoding="async"
@@ -48,9 +48,9 @@ export default function EditorialPage() {
                 {/* Grid de Artículos */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { title: 'Fibra de Carbono: Del Monocasco al Guardarropa', date: 'ENE 2024', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80&auto=format', tag: 'MATERIALES' },
-                        { title: 'Entrevista: El Diseñador que Corre los Domingos', date: 'DIC 2023', image: 'https://images.unsplash.com/photo-1504817343863-5092a923803e?w=600&q=80&auto=format', tag: 'PERSONAS' },
-                        { title: 'GP de Mónaco: Estilo Callejero Meets Alta Costura', date: 'NOV 2023', image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&q=80&auto=format', tag: 'CULTURA' },
+                        { title: 'Fibra de Carbono: Del Monocasco al Guardarropa', date: 'ENE 2025', image: '/Images/Editorial/editorial-2.jpg', tag: 'MATERIALES' },
+                        { title: 'Entrevista: El Diseñador que Corre los Domingos', date: 'DIC 2024', image: '/Images/Editorial/editorial-3.jpg', tag: 'PERSONAS' },
+                        { title: 'GP de Mónaco: Estilo Callejero Meets Alta Costura', date: 'NOV 2024', image: '/Images/Editorial/editorial-4.jpg', tag: 'CULTURA' },
                     ].map((article) => (
                         <div key={article.title} className="group cursor-pointer">
                             <div className="aspect-[3/2] bg-asphalt border border-white/5 overflow-hidden mb-4 relative">
