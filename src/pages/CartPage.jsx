@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { getAssetUrl } from '../utils/assets'
 import useCartStore from '../stores/useCartStore'
 import Navbar from '../components/layout/Navbar'
 import useSEO from '../hooks/useSEO'
@@ -36,7 +37,7 @@ export default function CartPage() {
                         <div className="lg:col-span-2 space-y-4">
                             {items.map((item) => (
                                 <div key={item.key} className="flex gap-4 bg-asphalt border border-white/10 p-4 relative group">
-                                    <img src={item.image} alt={item.name} className="w-24 h-24 object-cover border border-white/5" loading="lazy" />
+                                    <img src={getAssetUrl(item.image)} alt={item.name} className="w-24 h-24 object-cover border border-white/5" loading="lazy" />
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div>
                                             <h3 className="font-bold text-white uppercase tracking-wide">{item.name}</h3>

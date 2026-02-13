@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getAssetUrl } from '../utils/assets'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
@@ -108,8 +109,8 @@ export default function CheckoutPage() {
                     {['Datos de Envío', 'Método de Pago', 'Confirmación'].map((label, i) => (
                         <div key={label} className="flex items-center gap-2 flex-1">
                             <div className={`w-8 h-8 flex items-center justify-center text-xs font-bold border transition-all ${step > i + 1 ? 'bg-green-500 border-green-500 text-white' :
-                                    step === i + 1 ? 'bg-primary border-primary text-white' :
-                                        'border-white/20 text-white/30'
+                                step === i + 1 ? 'bg-primary border-primary text-white' :
+                                    'border-white/20 text-white/30'
                                 }`}>
                                 {step > i + 1 ? '✓' : i + 1}
                             </div>
@@ -286,7 +287,7 @@ function OrderSummary({ items, subtotal, iva, total }) {
             <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
                 {items.map(item => (
                     <div key={item.key} className="flex gap-3">
-                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover border border-white/5" />
+                        <img src={getAssetUrl(item.image)} alt={item.name} className="w-12 h-12 object-cover border border-white/5" />
                         <div className="flex-1">
                             <p className="text-xs font-bold text-white/80">{item.name}</p>
                             <p className="text-[10px] font-[family-name:var(--font-mono)] text-white/30">{item.size ? `${item.size} — ` : ''}×{item.qty}</p>

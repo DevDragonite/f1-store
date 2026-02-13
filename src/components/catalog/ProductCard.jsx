@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import useCartStore from '../../stores/useCartStore'
 import { getProductById } from '../../data/products'
+import { getAssetUrl } from '../../utils/assets'
 
 const ProductCard = memo(function ProductCard({ product }) {
     const { name, price, sku, image, tag, tagStyle, soldOut, id, slug } = product
@@ -32,7 +33,7 @@ const ProductCard = memo(function ProductCard({ product }) {
 
             <div className={`relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden ${soldOut ? 'grayscale group-hover:grayscale-0 transition-all duration-500' : ''}`}>
                 <img
-                    src={image}
+                    src={getAssetUrl(image)}
                     alt={name}
                     loading="lazy"
                     decoding="async"

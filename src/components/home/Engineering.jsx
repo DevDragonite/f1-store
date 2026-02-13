@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { getAssetUrl } from '../../utils/assets'
 
 const Engineering = memo(function Engineering() {
     return (
@@ -29,7 +30,7 @@ const Engineering = memo(function Engineering() {
                             loading="lazy"
                             decoding="async"
                             className="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 opacity-80"
-                            src="/Images/Ferrari/Scuderia-Ferrari-Sweater-2.png"
+                            src={getAssetUrl("/Images/Ferrari/Scuderia-Ferrari-Sweater-2.png")}
                         />
                         <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none">
                             <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary"></div>

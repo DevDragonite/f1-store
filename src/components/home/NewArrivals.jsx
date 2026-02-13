@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from 'react'
+import { getAssetUrl } from '../../utils/assets'
 
 const products = [
     {
@@ -89,7 +90,7 @@ const CarouselCard = memo(function CarouselCard({ product, slot }) {
                     </div>
                 )}
                 <img
-                    src={product.image}
+                    src={getAssetUrl(product.image)}
                     alt={product.name}
                     loading="lazy"
                     decoding="async"

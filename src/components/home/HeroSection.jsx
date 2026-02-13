@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { getAssetUrl } from '../../utils/assets'
 
 export default function HeroSection() {
     const videoRef = useRef(null)
@@ -90,7 +91,7 @@ export default function HeroSection() {
                         preload="metadata"
                         className="w-full h-full object-cover opacity-60 md:opacity-100"
                     >
-                        <source src="/Video_Loop_Piloto_F_.mp4" type="video/mp4" />
+                        <source src={getAssetUrl("/Video_Loop_Piloto_F_.mp4")} type="video/mp4" />
                     </video>
                 </motion.div>
 

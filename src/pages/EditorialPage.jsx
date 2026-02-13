@@ -1,6 +1,7 @@
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import useSEO from '../hooks/useSEO'
+import { getAssetUrl } from '../../utils/assets'
 
 export default function EditorialPage() {
     useSEO('Editorial', 'Historias del paddock, entrevistas con pilotos y la cultura de velocidad que inspira cada colección Rennsport.')
@@ -20,7 +21,7 @@ export default function EditorialPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
                     <div className="aspect-[4/3] bg-asphalt border border-white/10 overflow-hidden relative group">
                         <img
-                            src="/Images/Editorial/editorial-1.jpg"
+                            src={getAssetUrl("/Images/Editorial/editorial-1.jpg")}
                             alt="Auto F1 en pista"
                             loading="lazy"
                             decoding="async"
@@ -55,7 +56,7 @@ export default function EditorialPage() {
                         <div key={article.title} className="group cursor-pointer">
                             <div className="aspect-[3/2] bg-asphalt border border-white/5 overflow-hidden mb-4 relative">
                                 <img
-                                    src={article.image}
+                                    src={getAssetUrl(article.image)}
                                     alt={article.title}
                                     loading="lazy"
                                     decoding="async"

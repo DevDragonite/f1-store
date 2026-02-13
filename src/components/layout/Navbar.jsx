@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import useCartStore from '../../stores/useCartStore'
 import useAuthStore from '../../stores/useAuthStore'
+import { getAssetUrl } from '../../utils/assets'
 
 export default function Navbar() {
     const totalItems = useCartStore(s => s.items.reduce((sum, i) => sum + i.qty, 0))
@@ -90,7 +91,7 @@ export default function Navbar() {
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 group">
                         <img
-                            src="/Logo F1 Proyecto.jpg"
+                            src={getAssetUrl("/Logo F1 Proyecto.jpg")}
                             alt="Rennsport Logo"
                             className="w-10 h-10 rounded-sm object-cover transition-transform group-hover:scale-110 duration-300"
                         />
