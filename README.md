@@ -1,16 +1,67 @@
-# React + Vite
+# 🏎️ Rennsport — F1 E-Commerce
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tienda online de merchandising premium inspirado en la Fórmula 1, diseñada para el mercado venezolano. Construida con React, Vite, Tailwind CSS y una estética de telemetría F1.
 
-Currently, two official plugins are available:
+## ⚡ Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend:** React 19 + Vite
+- **Estilos:** Tailwind CSS v4 + CSS custom (glassmorphism, HUD borders, scanlines)
+- **Estado:** Zustand (carrito con persistencia en localStorage)
+- **Routing:** React Router v7 (lazy loading por página)
+- **Animaciones:** Framer Motion
+- **Cursor:** Custom SVG cursor con detección de hover
 
-## React Compiler
+## 📦 Estructura del Proyecto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+├── components/
+│   ├── catalog/        # ProductCard, SidebarFilters
+│   ├── home/           # HeroSection, NewArrivals, Engineering
+│   └── layout/         # Navbar, Footer
+├── data/
+│   └── products.js     # Datos centralizados de productos
+├── pages/
+│   ├── HomePage.jsx         # Landing con video hero
+│   ├── CatalogPage.jsx      # Catálogo con filtros y grid
+│   ├── ProductDetailPage.jsx # Detalle con selector de talla
+│   ├── CartPage.jsx          # Carrito funcional (Zustand)
+│   ├── EditorialPage.jsx     # Artículos del paddock
+│   ├── ThePitPage.jsx        # Centro de soporte
+│   └── DashboardPage.jsx     # Admin (login requerido)
+├── stores/
+│   └── useCartStore.js  # Estado global del carrito
+└── index.css            # Design system completo
+```
 
-## Expanding the ESLint configuration
+## 🚀 Iniciar Proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+## 🔒 Panel Admin
+
+Accede a `/dashboard` con:
+- **Usuario:** `admin`
+- **Contraseña:** `rennsport2024`
+
+Gestión de pedidos: pendientes, reservas (sin stock), en camino, entregados.
+
+## 📋 Funcionalidades
+
+- ✅ Home page con video hero loop + fade transitions
+- ✅ Catálogo con 6 productos F1, filtros por equipo/categoría/precio
+- ✅ Detalle de producto con selector de talla
+- ✅ Carrito persistente (localStorage) con IVA 16%
+- ✅ Editorial — artículos del paddock
+- ✅ Soporte — 6 categorías de ayuda
+- ✅ Dashboard admin con gestión de pedidos
+- ✅ Custom cursor con hover detection
+- ✅ Code splitting (todas las páginas lazy-loaded)
+- ✅ Todo el contenido en español 🇻🇪
+
+---
+
+Desarrollado con 🔴 por **Rennsport Engineering**
