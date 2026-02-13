@@ -5,12 +5,28 @@ export default function CustomCursor() {
     const dotRef = useRef(null)
     const [hovering, setHovering] = useState(false)
 
+    const [isVisible, setIsVisible] = useState(false)
+
     useEffect(() => {
+        // Disable on touch devices or small screens
+        const isTouchDevice = () => {
+            return (('ontouchstart' in window) ||
+                (navigator.maxTouchPoints > 0) ||
+                (navigator.msMaxTouchPoints > 0))
+        }
+
+        if (isTouchDevice() || window.innerWidth < 1024) {
+            return
+        }
+
+        setIsVisible(true)
+
         const handleMouseMove = (e) => {
-            if (cursorRef.current) {
+            if (cursorRef.current && isVisible) {
                 cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`
             }
         }
+        // ... rest of event listeners
 
         const handleMouseOver = (e) => {
             const target = e.target.closest('a, button, [role="button"], input[type="submit"], select, label[class*="cursor"]')
@@ -33,10 +49,12 @@ export default function CustomCursor() {
         }
     }, [])
 
+    if (!isVisible) return null
+
     return (
         <div
             ref={cursorRef}
-            className="fixed top-0 left-0 pointer-events-none will-change-transform"
+            className="fixed top-0 left-0 pointer-events-none will-change-transform hidden lg:block"
             style={{ zIndex: 10000 }}
         >
             {/* Main cursor — chevron */}
