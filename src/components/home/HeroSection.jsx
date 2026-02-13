@@ -94,13 +94,13 @@ export default function HeroSection() {
                     </video>
                 </motion.div>
 
-                {/* Telemetry Decor */}
-                <div className="absolute bottom-10 right-10 z-20 flex flex-col gap-2 font-[family-name:var(--font-mono)] text-[10px] text-white/40 text-right">
+                {/* Telemetry Decor - Removed as requested */}
+                {/* <div className="absolute bottom-10 right-10 z-20 flex flex-col gap-2 font-[family-name:var(--font-mono)] text-[10px] text-white/40 text-right">
                     <p>TEMP. AIRE: 32°C</p>
                     <p>TEMP. PISTA: 45°C</p>
                     <p>HUMEDAD: 62%</p>
                     <div className="w-20 h-[1px] bg-white/20 ml-auto mt-2"></div>
-                </div>
+                </div> */}
             </div>
         </header>
     )

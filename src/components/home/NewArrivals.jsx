@@ -144,19 +144,20 @@ export default function NewArrivals() {
                     </div>
 
                     {/* Navigation Arrows */}
+                    {/* Navigation Arrows */}
                     <button
                         onClick={goLeft}
-                        className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all rounded-full backdrop-blur-sm bg-black/30 active:scale-90"
+                        className="absolute left-0 md:left-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 border-2 border-white bg-primary text-white flex items-center justify-center transition-all rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] active:scale-90 hover:bg-white hover:text-primary"
                         aria-label="Anterior"
                     >
-                        <span className="material-symbols-outlined text-white">west</span>
+                        <span className="material-symbols-outlined">west</span>
                     </button>
                     <button
                         onClick={goRight}
-                        className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all rounded-full backdrop-blur-sm bg-black/30 active:scale-90"
+                        className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 border-2 border-white bg-primary text-white flex items-center justify-center transition-all rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] active:scale-90 hover:bg-white hover:text-primary"
                         aria-label="Siguiente"
                     >
-                        <span className="material-symbols-outlined text-white">east</span>
+                        <span className="material-symbols-outlined">east</span>
                     </button>
 
                     {/* Dot Indicators */}

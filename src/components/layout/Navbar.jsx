@@ -94,7 +94,7 @@ export default function Navbar() {
                             alt="Rennsport Logo"
                             className="w-10 h-10 rounded-sm object-cover transition-transform group-hover:scale-110 duration-300"
                         />
-                        <span className="font-bold text-xl tracking-widest uppercase font-[family-name:var(--font-display)]">
+                        <span className="font-bold text-base md:text-xl tracking-widest uppercase font-[family-name:var(--font-display)]">
                             Rennsport
                         </span>
                     </Link>

@@ -7,7 +7,7 @@ const Engineering = memo(function Engineering() {
 
             <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 {/* Imagen */}
-                <div className="order-2 lg:order-1 relative">
+                <div className="order-1 lg:order-1 relative">
                     <div className="relative rounded-sm overflow-hidden border border-white/10 group">
                         <img
                             alt="Suéter Scuderia Ferrari — detalle de materiales premium"
@@ -24,7 +24,7 @@ const Engineering = memo(function Engineering() {
                 </div>
 
                 {/* Texto */}
-                <div className="order-1 lg:order-2 flex flex-col gap-6">
+                <div className="order-2 lg:order-2 flex flex-col gap-6">
                     <div className="flex items-center gap-2 text-electric-blue text-xs font-[family-name:var(--font-mono)] font-bold tracking-widest uppercase">
                         <span className="material-symbols-outlined text-sm">memory</span>
                         Especificaciones Técnicas
