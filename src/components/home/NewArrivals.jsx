@@ -72,7 +72,7 @@ const CarouselCard = memo(function CarouselCard({ product, slot }) {
 
     return (
         <div
-            className="absolute top-0 left-1/2 w-[280px] sm:w-[320px] md:w-[380px] cursor-pointer"
+            className="absolute top-0 left-1/2 w-[70vw] sm:w-[320px] md:w-[380px] cursor-pointer"
             style={{
                 transform: `translateX(calc(-50% + ${style.x})) scale(${style.scale})`,
                 zIndex: style.z + 200,

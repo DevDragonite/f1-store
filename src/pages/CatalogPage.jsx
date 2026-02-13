@@ -13,6 +13,7 @@ export default function CatalogPage() {
     const [selectedTeams, setSelectedTeams] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [priceRange, setPriceRange] = useState([0, 500])
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false) // New mobile state
 
     const handleTeamToggle = useCallback((team) => {
         setSelectedTeams(prev =>
@@ -22,6 +23,7 @@ export default function CatalogPage() {
 
     const handleCategorySelect = useCallback((cat) => {
         setSelectedCategory(cat)
+        setIsMobileFiltersOpen(false) // Close on selection (optional, maybe better to keep open?)
     }, [])
 
     const handlePriceChange = useCallback((range) => {
@@ -88,6 +90,8 @@ export default function CatalogPage() {
                     priceRange={priceRange}
                     onPriceChange={handlePriceChange}
                     productCounts={productCounts}
+                    isOpen={isMobileFiltersOpen} // New prop
+                    onClose={() => setIsMobileFiltersOpen(false)} // New prop
                 />
 
                 <main className="flex-1 lg:ml-80 min-h-screen relative">
@@ -102,6 +106,13 @@ export default function CatalogPage() {
                                 <p className="font-[family-name:var(--font-mono)] text-sm text-gray-400">SECTOR 3 // INVENTARIO DE ALTO RENDIMIENTO</p>
                             </div>
                             <div className="mt-4 md:mt-0 flex items-center gap-4">
+                                {/* Mobile Filter Toggle */}
+                                <button
+                                    onClick={() => setIsMobileFiltersOpen(true)}
+                                    className="lg:hidden flex items-center gap-2 text-xs font-[family-name:var(--font-mono)] text-primary border border-primary/30 px-3 py-2 bg-primary/10 uppercase"
+                                >
+                                    <span className="material-icons text-sm">tune</span> FILTROS
+                                </button>
                                 <div className="text-xs font-[family-name:var(--font-mono)] text-primary">
                                     [{filteredProducts.length}] PRODUCTOS
                                 </div>

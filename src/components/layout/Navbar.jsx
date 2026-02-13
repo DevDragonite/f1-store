@@ -121,7 +121,12 @@ export default function Navbar() {
                         {/* Mi Cuenta Dropdown */}
                         <div className="relative" ref={dropdownRef}>
                             <button
-                                onClick={() => { setAccountOpen(!accountOpen); setAuthError(''); setAuthSuccess('') }}
+                                onClick={() => {
+                                    setAccountOpen(!accountOpen);
+                                    setMobileOpen(false); // Close mobile menu
+                                    setAuthError('');
+                                    setAuthSuccess('')
+                                }}
                                 className={`p-2.5 rounded-full transition-all hover:scale-110 active:scale-95 ${accountOpen || user ? 'bg-primary/20 text-primary' : 'hover:bg-white/10 text-white'}`}
                                 aria-label="Mi Cuenta"
                             >
@@ -227,7 +232,10 @@ export default function Navbar() {
                         </Link>
                         {/* Hamburger */}
                         <button
-                            onClick={() => setMobileOpen(!mobileOpen)}
+                            onClick={() => {
+                                setMobileOpen(!mobileOpen)
+                                setAccountOpen(false) // Close account dropdown
+                            }}
                             className="md:hidden p-2.5 hover:bg-white/10 rounded-full transition-all hover:scale-110 active:scale-95 relative w-10 h-10 flex items-center justify-center"
                             aria-label="Menú"
                         >
