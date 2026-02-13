@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Strategic Operations Center - Paddock.OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e00700",
+                        "background-dark": "#0a0a0c",
+                        "surface-dark": "#141417",
+                        "accent-blue": "#00f0ff",
+                        "accent-green": "#00ff9d",
+                        "panel-border": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    boxShadow: {
+                        "glow-blue": "0 0 20px -5px rgba(0, 240, 255, 0.3)",
+                        "glow-red": "0 0 20px -5px rgba(224, 7, 0, 0.4)",
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-background-dark text-white font-display overflow-x-hidden;
+                background-image: 
+                    radial-gradient(circle at 50% 50%, rgba(224, 7, 0, 0.05) 0%, transparent 50%),
+                    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                background-size: 100% 100%, 40px 40px, 40px 40px;
+            }
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 240, 255, 0.1);
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+        }
+        @keyframes scanline {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        .panel-mask {
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        }
+        .data-stream::-webkit-scrollbar {
+            width: 4px;
+        }
+        .data-stream::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .data-stream::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 lg:p-6 gap-6 relative">
+<div class="scanline"></div>
+<header class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-surface-dark/40 border border-panel-border p-4 panel-mask backdrop-blur-xl">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xl">radar</span>
+<h1 class="text-2xl font-bold tracking-tighter uppercase italic">Strategic Ops Center</h1>
+</div>
+<span class="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em]">Sector 04 // Paddock Command</span>
+</div>
+<div class="h-10 w-px bg-panel-border hidden md:block"></div>
+<div class="hidden md:flex gap-8 items-center">
+<div class="flex flex-col">
+<span class="text-[9px] text-gray-500 uppercase font-mono">System Uplink</span>
+<span class="text-xs font-mono text-accent-green flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-accent-green rounded-full animate-pulse"></span>
+                        SECURE_ENCRYPTED
+                    </span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] text-gray-500 uppercase font-mono">Active Nodes</span>
+<span class="text-xs font-mono text-white">42 // 0 ERROR</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto">
+<div class="flex-grow lg:flex-grow-0 flex items-center bg-black/40 border border-panel-border rounded px-4 py-2 gap-4">
+<div class="text-right">
+<div class="text-[9px] text-gray-500 uppercase font-mono">Active Principal</div>
+<div class="text-xs font-bold uppercase tracking-widest text-accent-blue">M. Verstappen</div>
+</div>
+<div class="w-8 h-8 rounded border border-accent-blue/50 overflow-hidden">
+<img alt="Principal Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNkwhqcU80Kd3qEZV3krMemYl64FCMru85KfU-JTv7VQga74KsL8V2xiHkAXSW776L_60gDZF9Qe4sDikugiSzRD_PYWYRqFBDsZVpNkCTEMOT3YJJSttH7FeTxzBMHux-tYKt7v3ByeIHByVFfJSAc6cE5kHcjv2erSv98GICd4ZwfRghr6ZHnEcLOfIQXhEN_SuSVE3IOX2p8Q_fLxfjCNNdr_DPyo_ouUY32WKCMAQgEvyUnbu51YuQPK-V7vx-Qy-Gjr2N3yU"/>
+</div>
+</div>
+<button class="p-3 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-icons">power_settings_new</span>
+</button>
+</div>
+</header>
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+<div class="lg:col-span-3 flex flex-col gap-6">
+<div class="bg-surface-dark border border-panel-border p-5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/5 -mr-8 -mt-8 rotate-45"></div>
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Driver Status</h3>
+<span class="text-[10px] font-mono text-accent-green">READY</span>
+</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded bg-gray-900 border border-panel-border overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+<img alt="Driver" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA58O5XV3_kmB6UDHQbKnI_fLRLfs9dHAnQSjQz7VGUfjccp6I1MpMvHjxxiI30_i_8mTK0I3HNVsaAH0Rwmvq2M6Nq1fXHqtO-s5oR3qyoTFFQC4JyfM9-Z-DNyeVQ41daaW5BEXFCUGbbxPsm1enVuYzonRyQFpnMpPVxekYo-V_xJbZV6KzPQv_M7CNAYlDXjyddjBkHo92mzxmWp7Jd037vkOuNmNZI8-ou_tiOcc5-jgI0cqbA6lMfInJzGnvRkTcTTE2w4MY"/>
+</div>
+<div>
+<div class="text-lg font-bold uppercase tracking-tight">Verstappen</div>
+<div class="text-[10px] font-mono text-primary">#MV33-SUPER-LICENCE</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-[10px] font-mono">
+<span class="text-gray-500">BIOMETRICS</span>
+<span class="text-accent-green">STABLE</span>
+</div>
+<div class="w-full bg-white/5 h-1">
+<div class="bg-accent-green h-full w-[88%] shadow-[0_0_8px_rgba(0,255,157,0.5)]"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono">
+<span class="text-gray-500">FOCUS INDEX</span>
+<span class="text-accent-blue">94%</span>
+</div>
+<div class="w-full bg-white/5 h-1">
+<div class="bg-accent-blue h-full w-[94%] shadow-[0_0_8px_rgba(0,240,255,0.5)]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-panel-border p-5 panel-mask">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">R&amp;D Loyalty Yield</h3>
+<span class="material-icons text-primary text-sm">trending_up</span>
+</div>
+<div class="flex flex-col items-center py-4">
+<div class="text-4xl font-mono font-bold text-white mb-1 tracking-tighter">2,450<span class="text-primary text-xl">.00</span></div>
+<div class="text-[10px] font-mono text-gray-500 uppercase">Points Accumulated</div>
+</div>
+<div class="flex items-end gap-1 h-12 w-full mt-4">
+<div class="flex-grow bg-primary/20 h-[40%]"></div>
+<div class="flex-grow bg-primary/30 h-[60%]"></div>
+<div class="flex-grow bg-primary/40 h-[55%]"></div>
+<div class="flex-grow bg-primary/50 h-[80%]"></div>
+<div class="flex-grow bg-primary/60 h-[75%]"></div>
+<div class="flex-grow bg-primary/80 h-[90%]"></div>
+<div class="flex-grow bg-primary h-[100%] shadow-glow-red"></div>
+</div>
+<div class="mt-6 space-y-2">
+<button class="w-full py-2 bg-white/5 border border-panel-border text-[10px] font-mono uppercase hover:bg-white/10 transition-colors">Apply Upgrades</button>
+<button class="w-full py-2 bg-white/5 border border-panel-border text-[10px] font-mono uppercase hover:bg-white/10 transition-colors">Tier Projection</button>
+</div>
+</div>
+<div class="bg-surface-dark border border-panel-border flex-grow p-4 flex flex-col gap-2">
+<h3 class="text-[9px] font-mono text-gray-500 uppercase mb-2">Operation Protocols</h3>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-3 bg-black/40 border border-panel-border hover:border-accent-blue group transition-all">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-accent-blue block mb-1">payments</span>
+<span class="text-[9px] font-mono uppercase text-gray-400 group-hover:text-white">Assets</span>
+</button>
+<button class="p-3 bg-black/40 border border-panel-border hover:border-accent-blue group transition-all">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-accent-blue block mb-1">precision_manufacturing</span>
+<span class="text-[9px] font-mono uppercase text-gray-400 group-hover:text-white">Garage</span>
+</button>
+<button class="p-3 bg-black/40 border border-panel-border hover:border-accent-blue group transition-all">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-accent-blue block mb-1">support_agent</span>
+<span class="text-[9px] font-mono uppercase text-gray-400 group-hover:text-white">Pit Comms</span>
+</button>
+<button class="p-3 bg-black/40 border border-panel-border hover:border-accent-blue group transition-all">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-accent-blue block mb-1">settings_suggest</span>
+<span class="text-[9px] font-mono uppercase text-gray-400 group-hover:text-white">Config</span>
+</button>
+</div>
+</div>
+</div>
+<div class="lg:col-span-9 flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-dark/60 border-l-2 border-primary border-panel-border p-4">
+<div class="text-[9px] font-mono text-gray-500 uppercase mb-1">Total Fiscal Output</div>
+<div class="text-xl font-mono font-bold">$12,450.00</div>
+<div class="text-[9px] font-mono text-accent-green mt-1">▲ 12.4% vs L-Season</div>
+</div>
+<div class="bg-surface-dark/60 border-l-2 border-accent-blue border-panel-border p-4">
+<div class="text-[9px] font-mono text-gray-500 uppercase mb-1">Successful Deployments</div>
+<div class="text-xl font-mono font-bold">24 Orders</div>
+<div class="text-[9px] font-mono text-accent-blue mt-1">100% SUCCESS RATE</div>
+</div>
+<div class="bg-surface-dark/60 border-l-2 border-accent-green border-panel-border p-4 col-span-1 md:col-span-2 relative overflow-hidden">
+<div class="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-accent-green/10 to-transparent"></div>
+<div class="text-[9px] font-mono text-gray-500 uppercase mb-1">Upcoming Milestone (Delivery)</div>
+<div class="flex items-center gap-4">
+<div class="text-xl font-mono font-bold text-accent-green">T-MINUS 02:14:45</div>
+<div class="flex-grow bg-white/5 h-1.5 rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-accent-green w-3/4"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-panel-border flex-grow flex flex-col min-h-0">
+<div class="p-4 border-b border-panel-border flex justify-between items-center bg-black/20">
+<div class="flex items-center gap-4">
+<h3 class="text-xs font-mono font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+<span class="w-2 h-2 bg-primary animate-ping rounded-full"></span>
+                            Live Mission Log
+                        </h3>
+<div class="hidden sm:flex items-center gap-2 text-[10px] font-mono text-gray-500">
+<span class="px-2 py-0.5 border border-panel-border">FILTER: ALL_OPERATIONS</span>
+<span class="px-2 py-0.5 border border-panel-border">SORT: DATE_DESC</span>
+</div>
+</div>
+<div class="flex gap-2">
+<input class="bg-black/40 border border-panel-border rounded px-3 py-1 text-[10px] font-mono text-white focus:border-primary outline-none w-32" placeholder="QUERY_ID..." type="text"/>
+<button class="bg-primary/20 hover:bg-primary/40 border border-primary/40 px-3 py-1 text-[10px] font-mono uppercase transition-colors">Export DB</button>
+</div>
+</div>
+<div class="overflow-auto flex-grow data-stream">
+<table class="w-full text-left font-mono border-collapse">
+<thead class="sticky top-0 bg-surface-dark z-10 border-b border-panel-border">
+<tr class="text-[9px] text-gray-500 uppercase">
+<th class="p-4 font-normal">OP_ID</th>
+<th class="p-4 font-normal">TIMESTAMP</th>
+<th class="p-4 font-normal">PAYLOAD / COMPONENT</th>
+<th class="p-4 font-normal">VALUATION</th>
+<th class="p-4 font-normal">VITAL_STATUS</th>
+<th class="p-4 font-normal text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="text-xs divide-y divide-white/5">
+<tr class="group hover:bg-accent-blue/5 transition-colors border-l-2 border-accent-blue">
+<td class="p-4 text-accent-blue font-bold">#ORD-9921</td>
+<td class="p-4 text-gray-400">2023.10.24 14:00</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 border border-panel-border flex-shrink-0">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdodlpQj8FiSB0bfFaD_58Z0IEuqGxe1Un7jZd8eTflrF2k-JldPcRofA_MPKDa2IIIfKg5PNzXSRY6vEom4ay4sqZGZuaoaLnq6yKIUSlGNx4hKtl7Iretw-TtGx-1yjhta8uxBU51JCUJfQ6fiJ7RnfcrgEK2QYHqAu7hToQ8_hg5_OD-EINGufl7rbYiE87WjvKXkwM5ZThDIvsy0wny--rqVap5NpeCYXMZEv-e-6Js3aaeFK99CGbCTpOYr-i_R9zuBEedZI"/>
+</div>
+<span class="text-white truncate max-w-[200px]">Carbon Chrono Limited // V8-Spec</span>
+</div>
+</td>
+<td class="p-4 font-bold text-white">$4,200.00</td>
+<td class="p-4">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-[8px] uppercase">
+<span>Transit</span>
+<span class="text-accent-blue">72%</span>
+</div>
+<div class="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
+<div class="bg-accent-blue h-full w-[72%]"></div>
+</div>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-accent-blue opacity-50 hover:opacity-100"><span class="material-icons text-sm">terminal</span></button>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="p-4 text-gray-300">#ORD-8812</td>
+<td class="p-4 text-gray-500">2023.09.12 09:30</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 border border-panel-border flex-shrink-0">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnFL-8s7qt_8yHzuIHxvb3UuQSl0R8I_zbAzlRcg2Gh4_fkftzLyWotElH13XraE6zl9rOmsWazT-KJIRclQC7KiqfiukpYglFM0IMP9oI3HzYexXlAlEegYHo3Cq_wUyBZz19ugW3mHA36RC-8RBVVy7AFk6vP2hbPsqRvXzhlpwf5JevMXOeUfdJ-uhg-uxEldycIUFJbjqnGkJscVvZe1zyQ2bL1DKPNKO3uny5PlJHGjo0yUVU88PJyxqG6VkZAF2So3QbPeY"/>
+</div>
+<span class="text-gray-300 truncate max-w-[200px]">Nomex Pro Gloves // Thermal-Lined</span>
+</div>
+</td>
+<td class="p-4 text-gray-300">$180.00</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-accent-green/10 text-accent-green border border-accent-green/20 text-[9px] uppercase font-bold">DEPLOYED</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-gray-600 hover:text-white"><span class="material-icons text-sm">visibility</span></button>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="p-4 text-gray-300">#ORD-8774</td>
+<td class="p-4 text-gray-500">2023.08.01 16:45</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 border border-panel-border flex-shrink-0">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoyQxFQIFjCjAZ-OpGR20Lbef5u2y27WQuuQ1ExOhG0uxO138404uLBhICwrzoscdABolrQ41lM_5kBnrFDVDgWnBYVF9UYUZtxqMZkSDyb8AwNNRWhsxF7jbp9p4FXh2o_frdt2Zsv3SSPYU1Mjh6e6JR4s00_i6req48nWsi1YvKDnDPgMOsQxXKpI_lNVuoMwC2IKUqE_RaiyhoSdDGgi7KVHXIhwLSOJlG1fEZDjBXrmBaDWeaGCqdI7uou4wmtRU3bH5o8zE"/>
+</div>
+<span class="text-gray-300 truncate max-w-[200px]">Aviator Spec B // Anti-Glare</span>
+</div>
+</td>
+<td class="p-4 text-gray-300">$350.00</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-accent-green/10 text-accent-green border border-accent-green/20 text-[9px] uppercase font-bold">DEPLOYED</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-gray-600 hover:text-white"><span class="material-icons text-sm">visibility</span></button>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="p-4 text-gray-300">#ORD-8600</td>
+<td class="p-4 text-gray-500">2023.07.15 11:00</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 border border-panel-border flex-shrink-0">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFIZFN19wrbYYSsTnqKAj2wi7bW-g-0cke-BTChClCuleeB-uvpGxI4YHHzaSqPp4G3g6rLWqX-QLS3m8QOLJcEqXiOYH72O7KqTqXQb-F9JL9hp3AoqIuiTwYOzQqCnTPWJwJFQXRbqXmV_ByndJeLKWk2BXYjQDO-nZTSe-wKVYXWDAlWQvUU2L2AvqqdBu8VYoCFMN09WVE4ngxLmyzYMq0xRHfUPpRaNDvnvxMteVBu3quHlrFq6BeGA6qtK9oWB0hXSlcxJ8"/>
+</div>
+<span class="text-gray-300 truncate max-w-[200px]">1:18 Scale Replica // Carbon Edition</span>
+</div>
+</td>
+<td class="p-4 text-gray-300">$850.00</td>
+<td class="p-4">
+<span class="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 text-[9px] uppercase font-bold">ABORTED</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-gray-600 hover:text-white"><span class="material-icons text-sm">visibility</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-panel-border flex justify-between items-center text-[9px] font-mono text-gray-600 uppercase bg-black/10">
+<div>Showing Active Log Segment // Page 01 of 03</div>
+<div class="flex gap-1">
+<button class="w-6 h-6 border border-panel-border flex items-center justify-center hover:bg-white/5 disabled:opacity-30">«</button>
+<button class="w-6 h-6 border border-panel-border flex items-center justify-center bg-primary/20 text-white">01</button>
+<button class="w-6 h-6 border border-panel-border flex items-center justify-center hover:bg-white/5">02</button>
+<button class="w-6 h-6 border border-panel-border flex items-center justify-center hover:bg-white/5">03</button>
+<button class="w-6 h-6 border border-panel-border flex items-center justify-center hover:bg-white/5">»</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-dark border border-panel-border p-4 relative">
+<h4 class="text-[9px] font-mono text-gray-500 uppercase mb-3">Asset Allocation Trend</h4>
+<div class="h-32 flex items-end gap-2 px-2">
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-accent-blue/30 h-[40%] group-hover:h-[45%] transition-all"></div>
+</div>
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-accent-blue/40 h-[65%] group-hover:h-[70%] transition-all"></div>
+</div>
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-accent-blue/50 h-[55%] group-hover:h-[60%] transition-all"></div>
+</div>
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-accent-blue/60 h-[85%] group-hover:h-[90%] transition-all"></div>
+</div>
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-accent-blue/70 h-[75%] group-hover:h-[80%] transition-all"></div>
+</div>
+<div class="flex-grow bg-white/5 relative group">
+<div class="absolute bottom-0 w-full bg-primary h-[95%] group-hover:h-[100%] transition-all shadow-glow-red"></div>
+</div>
+</div>
+<div class="flex justify-between text-[8px] font-mono text-gray-600 mt-2">
+<span>MAY</span><span>JUN</span><span>JUL</span><span>AUG</span><span>SEP</span><span class="text-primary">OCT (NOW)</span>
+</div>
+</div>
+<div class="bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 p-5 panel-mask relative overflow-hidden flex flex-col justify-between">
+<div class="relative z-10">
+<span class="text-[9px] font-mono font-bold text-primary uppercase bg-primary/20 px-2 py-0.5 rounded">Special Operation Available</span>
+<h4 class="text-xl font-bold uppercase mt-2">Monaco Intelligence Upgrade</h4>
+<p class="text-xs text-gray-400 mt-1 max-w-xs">Gain exclusive operational insights for the upcoming Mediterranean circuit. Restricted to Constructor tier principals only.</p>
+</div>
+<div class="relative z-10 mt-6">
+<button class="px-6 py-2 bg-white text-black font-bold uppercase text-[10px] tracking-widest hover:bg-accent-blue hover:text-white transition-all shadow-glow-blue">
+                            INITIATE UPGRADE
+                        </button>
+</div>
+<span class="material-icons absolute -bottom-8 -right-8 text-white/5 text-9xl">insights</span>
+</div>
+</div>
+</div>
+</main>
+<footer class="flex flex-col md:flex-row justify-between items-center bg-surface-dark/40 border border-panel-border p-3 px-6 gap-4">
+<div class="flex items-center gap-4 text-[9px] font-mono text-gray-600 uppercase">
+<span>© 2023 Paddock Luxury Strategic Ops</span>
+<span class="w-1 h-1 bg-gray-800 rounded-full"></span>
+<span class="text-accent-green">Kernal Status: OPTIMAL</span>
+<span class="w-1 h-1 bg-gray-800 rounded-full"></span>
+<span>Uptime: 452:12:08</span>
+</div>
+<div class="flex gap-6 text-[9px] font-mono text-gray-500 uppercase">
+<a class="hover:text-primary" href="#">Legal Telemetry</a>
+<a class="hover:text-primary" href="#">System Regs</a>
+<a class="hover:text-primary" href="#">Support Uplink</a>
+</div>
+<div class="text-[9px] font-mono text-gray-600 text-right">
+            BUILD_ID: SOC-492-X-2023 // SESSION: #TRK-8821-X
+        </div>
+</footer>
+
+</body></html>

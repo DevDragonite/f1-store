@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Engineering Catalog - F1 Luxury</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#e00700",
+                "background-light": "#f8f5f5",
+                "background-dark": "#0f0f0f", /* Deep charcoal as requested */
+                "asphalt": "#252525",
+                "technical-blue": "#00f0ff",
+                "carbon": "#1a1a1a"
+                },
+                fontFamily: {
+                "display": ["Space Grotesk", "sans-serif"],
+                "mono": ["JetBrains Mono", "monospace"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                backgroundImage: {
+                    'grid-pattern': "linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px)"
+                }
+            },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for grid background and HUD effects */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        }
+        
+        .hud-border {
+            position: relative;
+        }
+        
+        /* Corner markers for HUD feel */
+        .hud-border::before, .hud-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: rgba(255, 255, 255, 0.2);
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+
+        .hud-border::before {
+            top: 0;
+            left: 0;
+            border-width: 1px 0 0 1px;
+        }
+
+        .hud-border::after {
+            bottom: 0;
+            right: 0;
+            border-width: 0 1px 1px 0;
+        }
+
+        .card-hover:hover .hud-border::before,
+        .card-hover:hover .hud-border::after {
+            border-color: #00f0ff;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(37, 37, 37, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Custom scrollbar for sidebar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e00700; 
+        }
+
+        /* Scanline effect */
+        .scanline {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.15;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Subtle Scanline Overlay -->
+<div class="scanline"></div>
+<!-- Top Status Bar / Header -->
+<header class="fixed top-0 w-full z-40 bg-background-dark/90 backdrop-blur-md border-b border-white/10 h-16 flex items-center justify-between px-6">
+<div class="flex items-center gap-4">
+<div class="text-primary font-bold text-2xl tracking-tighter uppercase">Apex<span class="text-white">Eng.</span></div>
+<div class="h-6 w-px bg-white/20 mx-2"></div>
+<nav class="hidden md:flex items-center text-xs font-mono text-gray-400 gap-2">
+<span class="hover:text-primary cursor-pointer transition-colors">ROOT</span>
+<span>/</span>
+<span class="hover:text-primary cursor-pointer transition-colors">GARAGE</span>
+<span>/</span>
+<span class="text-white">COMPONENT_CATALOG_V2.4</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-2 font-mono text-xs text-primary">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                SYSTEM_LIVE
+            </div>
+<div class="flex items-center gap-4 text-white/80">
+<button class="hover:text-primary transition-colors"><span class="material-icons text-xl">search</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-icons text-xl">settings</span></button>
+<button class="flex items-center gap-2 hover:text-primary transition-colors border border-white/20 px-3 py-1 rounded bg-white/5">
+<span class="material-icons text-sm">shopping_cart</span>
+<span class="font-mono text-xs">CART [0]</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen pt-16">
+<!-- Telemetry Sidebar -->
+<aside class="w-80 fixed left-0 top-16 bottom-0 z-30 bg-carbon border-r border-white/10 overflow-y-auto hidden lg:block">
+<div class="p-6 space-y-8">
+<!-- Header of Filters -->
+<div class="flex items-center justify-between border-b border-white/10 pb-4">
+<h2 class="font-mono text-sm text-primary tracking-widest uppercase">Telemetry Filters</h2>
+<span class="material-icons text-gray-500 text-sm">tune</span>
+</div>
+<!-- Filter Group: Constructor -->
+<div class="space-y-4">
+<h3 class="font-display text-xs uppercase tracking-wider text-gray-400">Constructor_Team</h3>
+<div class="space-y-2">
+<label class="flex items-center justify-between group cursor-pointer p-2 hover:bg-white/5 rounded transition-colors border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 border border-gray-500 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+<span class="font-mono text-xs text-gray-300">SCUDERIA_FERRARI</span>
+</div>
+<span class="text-[10px] text-gray-600 font-mono">[12]</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer p-2 hover:bg-white/5 rounded transition-colors border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 border border-gray-500 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+<span class="font-mono text-xs text-gray-300">MERCEDES_AMG</span>
+</div>
+<span class="text-[10px] text-gray-600 font-mono">[08]</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer p-2 hover:bg-white/5 rounded transition-colors border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 border border-gray-500 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+<span class="font-mono text-xs text-gray-300">RED_BULL_RACING</span>
+</div>
+<span class="text-[10px] text-gray-600 font-mono">[15]</span>
+</label>
+</div>
+</div>
+<!-- Filter Group: Chassis (Category) -->
+<div class="space-y-4">
+<h3 class="font-display text-xs uppercase tracking-wider text-gray-400">Chassis_Config</h3>
+<div class="grid grid-cols-2 gap-2">
+<button class="border border-white/10 bg-asphalt hover:bg-primary hover:border-primary hover:text-white text-gray-400 py-2 px-3 text-xs font-mono transition-all text-left">
+                            &gt;&gt; JACKETS
+                        </button>
+<button class="border border-primary bg-primary/20 text-white py-2 px-3 text-xs font-mono transition-all text-left shadow-[0_0_10px_rgba(224,7,0,0.3)]">
+                            &gt;&gt; HEADWEAR
+                        </button>
+<button class="border border-white/10 bg-asphalt hover:bg-primary hover:border-primary hover:text-white text-gray-400 py-2 px-3 text-xs font-mono transition-all text-left">
+                            &gt;&gt; FOOTWEAR
+                        </button>
+<button class="border border-white/10 bg-asphalt hover:bg-primary hover:border-primary hover:text-white text-gray-400 py-2 px-3 text-xs font-mono transition-all text-left">
+                            &gt;&gt; HARDWARE
+                        </button>
+</div>
+</div>
+<!-- Filter Group: Price (Slider) -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<h3 class="font-display text-xs uppercase tracking-wider text-gray-400">Unit_Cost</h3>
+<span class="font-mono text-xs text-technical-blue">$0 - $500</span>
+</div>
+<div class="relative w-full h-1 bg-gray-700 rounded">
+<div class="absolute top-0 left-0 h-full w-2/3 bg-primary"></div>
+<div class="absolute top-1/2 left-2/3 w-3 h-3 bg-white border-2 border-primary -translate-y-1/2 transform shadow-[0_0_10px_rgba(224,7,0,0.5)] cursor-pointer hover:scale-110 transition-transform"></div>
+</div>
+<div class="flex justify-between font-mono text-[10px] text-gray-600">
+<span>MIN: $0.00</span>
+<span>MAX: $1K</span>
+</div>
+</div>
+<!-- Technical Specs Display (Decorative) -->
+<div class="border-t border-white/10 pt-4 mt-8">
+<div class="bg-black/40 p-3 border border-white/5 font-mono text-[10px] text-gray-500 space-y-1">
+<div class="flex justify-between"><span>LATENCY:</span> <span class="text-green-500">12ms</span></div>
+<div class="flex justify-between"><span>GRID_LOAD:</span> <span>84%</span></div>
+<div class="flex justify-between"><span>SESSION:</span> <span>ACTIVE</span></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-80 bg-background-dark min-h-screen relative">
+<!-- Background Grid -->
+<div class="absolute inset-0 bg-grid pointer-events-none z-0"></div>
+<div class="relative z-10 p-8">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-white/10 pb-6">
+<div>
+<h1 class="text-4xl md:text-5xl font-bold text-white uppercase tracking-tighter mb-2">Race_Day_Apparel</h1>
+<p class="font-mono text-sm text-gray-400">SECTOR 3 // HIGH PERFORMANCE INVENTORY</p>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-4">
+<div class="flex items-center gap-2 text-xs font-mono text-gray-500 border border-white/10 px-3 py-1 bg-black/20">
+<span>SORT_BY:</span>
+<select class="bg-transparent border-none text-white focus:ring-0 cursor-pointer p-0">
+<option>REL_DATE_DESC</option>
+<option>PRICE_ASC</option>
+<option>PRICE_DESC</option>
+</select>
+</div>
+<div class="text-xs font-mono text-primary">
+                            [24] UNITS_FOUND
+                        </div>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Product Card 1 -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<!-- Image Container -->
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden">
+<img alt="Red and black minimalist running shoe" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Red and black minimalist running shoe side profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNRepl8nCJArEtHoP7OWP4DhYE_-E-urE920sS8-ufdSg6MMDFnGaE-xunxpWk0rYfIE4cIIUTtj95vRfSjq8UHJW-YwQYW0FCvd2lkR2YNLKB-PMIUQPsy7n0c9ai79jnkLaUqdT0P2rZ-i5Yr1oULR9J84yImptNwVI6UrvJXn1JSY0GNpyp_k8pYMJtH4JHp4GaVODlAxTDGhRQ1lYumdx8Ffgl5lujHngI2iTPL74NrGivifyt3YCC0Rnone3-TRwMHK34abU"/>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+<!-- Top Right Tag -->
+<div class="absolute top-4 right-4 bg-black/60 backdrop-blur text-white text-[10px] font-mono px-2 py-1 border border-white/10">
+                                S.2024
+                            </div>
+</div>
+<!-- Content Body -->
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">Velocity_Knit_V2</h3>
+<div class="font-mono text-sm text-primary">$185.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: RB-77-X</p>
+<!-- Hover HUD Overlay (Hidden by default, slides up/fades in) -->
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-technical-blue/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(0,240,255,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>MATERIAL: CARBON_FIBER_WEAVE</span>
+<span class="text-right">WEIGHT: 210g</span>
+<span>GRADE: TRACK_SPEC</span>
+<span class="text-right">STATUS: IN_STOCK</span>
+</div>
+<button class="w-full bg-primary hover:bg-red-600 text-white font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 group/btn">
+<span>Initialize_Purchase</span>
+<span class="material-icons text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 (Sold Out) -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 opacity-75 hover:opacity-100 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<!-- Sold Out Indicator -->
+<div class="absolute top-0 right-0 z-40 overflow-hidden w-32 h-32 pointer-events-none">
+<div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-mono font-bold px-8 py-1 transform rotate-45 translate-x-8 translate-y-6 shadow-lg border-y border-black">
+                                 PIT_LANE_CLOSED
+                             </div>
+</div>
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Black sleek sporty jacket" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" data-alt="Black sleek sporty jacket on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVrbj23soHaXzxsX0jcD7aT1UwlO3UBv0Dt1jRgQx0ncmY0OV3tHoRzcYxKybe6y1EqPL6ZMq8EbzWfjUddEhD__9JR-F3xyCDQGz75Gf3qycL3dRm1wL0XBQGZ7ks0pjoZ2UJuX_Ow9xDSuZlYm98vJ6M7NHO-Fo-E3oDu4lu7qRxmkaevfs1QpYIhfC7fztHh8Xv4RptTOjXFu3C_tRSbXBl17UjBcz24ooZSkTMlBtnQArVGXzWKUc20ZWwyUzn5FvN4fb1plM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+</div>
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-primary transition-colors">Aero_Shell_Pro</h3>
+<div class="font-mono text-sm text-gray-500 line-through">$420.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: MB-01-Z</p>
+<!-- Hover HUD Overlay -->
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-primary/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(224,7,0,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>MATERIAL: GORE-TEX_PRO</span>
+<span class="text-right">AERO: DRAG_REDUCTION</span>
+<span class="text-red-500 col-span-2 text-center uppercase font-bold mt-1">STOCK_DEPLETED</span>
+</div>
+<button class="w-full bg-gray-700 text-gray-400 font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 cursor-not-allowed" disabled="">
+<span>UNAVAILABLE</span>
+<span class="material-icons text-sm">lock</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden">
+<img alt="Black carbon fiber watch" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Close up of black carbon fiber watch on wrist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwHBaxGxMkaC6mjz54XDzls4cuY_onBj5RYjEfn0PB2mfxZXL-MAqmhXgAgwMw-u8BtrwELLWL6IFTlwmlCx6csxT1SnwSueLYxb-fVEFIwscJmWjxTJPW2TLQwqwQEzEIcpidrZyZCJHk59wN9Xk_yE7jw5WaH3ga2_E7jWkSRITQqv58DxZe97vPIqzmCU5FYFjeIxaZEH3NprU4zPTWDcPPFYT_6MiI7ZhrF6rb9_btNZgypvq0e9c9tE3k8QRoSXGMxXYH5Po"/>
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+<div class="absolute top-4 right-4 bg-technical-blue/10 text-technical-blue text-[10px] font-mono px-2 py-1 border border-technical-blue/30 backdrop-blur">
+                                NEW_ARRIVAL
+                            </div>
+</div>
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">Chrono_Telemetry_X</h3>
+<div class="font-mono text-sm text-primary">$1,250.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: FER-99-T</p>
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-technical-blue/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(0,240,255,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>MOVEMENT: AUTOMATIC</span>
+<span class="text-right">CASE: TITANIUM</span>
+<span>RESIST: 10ATM</span>
+<span class="text-right">LTD_EDITION: YES</span>
+</div>
+<button class="w-full bg-primary hover:bg-red-600 text-white font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 group/btn">
+<span>Initialize_Purchase</span>
+<span class="material-icons text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden">
+<img alt="Red racing baseball cap" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Formula 1 red racing baseball cap side view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5o9R75DpJyPaLw1vs-n7_qyoRgzh6AXA1rsC-VwYxpZIvc1CCfD5t4V-TbXQBNqYH1Sjljbo5o7pPXuE2g4NCbXx_UKS7WY9LzTX06ztaF6muD-GO-RNEt8UDvSg6Ry-aUaTn05K7dDB01NLxHZURZ8xTeCtol4oua_djtZhNzHwKSQgdzj-Y1xkhCUYSLNT_ipmK9vd2klyk1mpb1YQJd12tykKPF_7nCnbZDcqJEMPIJV2M4Idg6md8sbwDu008we6JztB9VEE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+</div>
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">Scuderia_Snapback</h3>
+<div class="font-mono text-sm text-primary">$45.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: FER-05-H</p>
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-technical-blue/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(0,240,255,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>FABRIC: POLY_BLEND</span>
+<span class="text-right">FIT: ADJUSTABLE</span>
+<span>SEASON: 2024</span>
+<span class="text-right">TEAM: FERRARI</span>
+</div>
+<button class="w-full bg-primary hover:bg-red-600 text-white font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 group/btn">
+<span>Initialize_Purchase</span>
+<span class="material-icons text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden">
+<img alt="Modern polarized sunglasses" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Modern polarized sunglasses with blue tint" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7bd5UDCRX6lGkb2W5iPRuvN6djKbmIOHv6sjxgg7eapHK_eEBQ1tB6vCi0XP7ByU73lEL79c-YGDwnk67IbZqjbNY0nfGY4yMsFOtlj7H06H9RHgZBmwO0UWp_4dPzC7GwcYlKWm-MGzsWL5LJJZ40g9J8fcO7mCI3_YlCflwjRwOqUSeT4lHU23GPX_q2oNaNUHwhz_p6G2BHLpEAlBo2FrF5V3eKtXplhREC82ghIBXGTBhuGZ-ctYWYo--WJ_xAvyu-Jifmc8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+</div>
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">Visor_Optics_Pro</h3>
+<div class="font-mono text-sm text-primary">$210.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: MCL-33-E</p>
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-technical-blue/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(0,240,255,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>LENS: POLARIZED</span>
+<span class="text-right">UV: 400_PROTECTION</span>
+<span>FRAME: LIGHTWEIGHT</span>
+<span class="text-right">TINT: OCEAN_BLUE</span>
+</div>
+<button class="w-full bg-primary hover:bg-red-600 text-white font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 group/btn">
+<span>Initialize_Purchase</span>
+<span class="material-icons text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="group relative card-hover bg-asphalt border border-white/5 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:z-20">
+<div class="hud-border absolute inset-0 pointer-events-none z-30"></div>
+<div class="relative aspect-[4/5] bg-[#1e1e1e] overflow-hidden">
+<img alt="Black gaming headphones" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Black gaming headphones with red accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4ZCs0ueOeSXQsQlTDlzOGbLFSJ42tMX9skcjaBRjG-t_FKw5Kq3q4qCTLE_HwwLTITG3qbBTGV28TdxjZ4_VibkaN2NI-Bdb9mYep6C7NFjQZqtVEKVH9RITWIbfKiKxBEo_mVo1UrXEk5wbYQ_2uGif-jYXEkzz-xjT6I55P_M9MxjwjCEd90OyktdU_RqOvuw5zpF_hq83ZhrXW_zT6a8CL6hnQEjfGLgSKGjdcsQRtR9C2fiVLjjY8ZvFPecHRr4HdzfA_0vY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-asphalt via-transparent to-transparent opacity-80"></div>
+<div class="absolute top-4 right-4 bg-primary text-white text-[10px] font-mono px-2 py-1 border border-black/30 backdrop-blur">
+                                HOT_LAP
+                            </div>
+</div>
+<div class="p-5 relative">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-white uppercase tracking-wide group-hover:text-technical-blue transition-colors">Paddock_Comms_Set</h3>
+<div class="font-mono text-sm text-primary">$350.00</div>
+</div>
+<p class="text-xs text-gray-500 font-mono mb-4">SKU: RBR-11-A</p>
+<div class="absolute inset-x-0 bottom-0 bg-asphalt/95 backdrop-blur-xl border-t border-technical-blue/30 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex flex-col gap-3 shadow-[0_-5px_20px_rgba(0,240,255,0.1)]">
+<div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400 border-b border-white/10 pb-2">
+<span>TYPE: NOISE_CANCEL</span>
+<span class="text-right">WIRELESS: BT_5.2</span>
+<span>BATTERY: 40H</span>
+<span class="text-right">MIC: BOOM_ARM</span>
+</div>
+<button class="w-full bg-primary hover:bg-red-600 text-white font-display uppercase text-sm font-bold py-2 tracking-wider flex items-center justify-center gap-2 group/btn">
+<span>Initialize_Purchase</span>
+<span class="material-icons text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination / Footer Data -->
+<div class="mt-12 border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-gray-500">
+<div class="flex items-center gap-2 mb-4 md:mb-0">
+<button class="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                            &lt;
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-white border border-primary">
+                            1
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                            2
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                            3
+                        </button>
+<button class="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                            &gt;
+                        </button>
+</div>
+<div class="flex gap-6 uppercase tracking-wider">
+<span>Database_Ver: 4.2.1</span>
+<span>Latency: 45ms</span>
+<span>Server: AWS-Frankfurt-1</span>
+</div>
+</div>
+</div>
+<!-- Technical Footer -->
+<footer class="border-t border-white/10 bg-black/40 py-8 px-8 mt-12 relative z-10">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div>
+<h4 class="text-white font-bold uppercase tracking-widest text-sm mb-1">Apex Engineering</h4>
+<p class="text-xs text-gray-600 font-mono">OFFICIAL LICENSED MERCHANDISE PARTNER</p>
+</div>
+<div class="flex gap-6 text-xs text-gray-500 font-mono">
+<a class="hover:text-primary transition-colors" href="#">TERMS_OF_SERVICE</a>
+<a class="hover:text-primary transition-colors" href="#">PRIVACY_PROTOCOL</a>
+<a class="hover:text-primary transition-colors" href="#">RETURN_POLICY</a>
+</div>
+<div class="text-[10px] text-gray-700 font-mono">
+                        © 2024 APEX ENG. ALL RIGHTS RESERVED. <br/>
+                        DESIGNED FOR HIGH PERFORMANCE.
+                    </div>
+</div>
+</footer>
+</main>
+</div>
+</body></html>
